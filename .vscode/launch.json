@@ -11,7 +11,7 @@
       "program": "${file}",
       "args": ["-b", "${workspaceFolder}", "-f", "debug_feature"],
       "console": "integratedTerminal",
-      "postDebugTask": "remove_files"
+      // "postDebugTask": "remove_files"
     }
   ]
 }
