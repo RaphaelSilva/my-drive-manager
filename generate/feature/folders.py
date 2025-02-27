@@ -1,20 +1,12 @@
 import os
 import argparse
-from re import sub
+from common import snake, create_files, create_folders
 
 
-def snake(s):
-    return '_'.join(
-        sub('([A-Z][a-z]+)', r' \1',
-            sub('([A-Z]+)', r' \1',
-                s.replace('-', ' '))).split()).lower()
-
-
-def create_init_files(subdir_path):
-    with open(os.path.join(subdir_path, "__init__.py"), "w", encoding="utf-8") as f:
-        # Create empty __init__.py files
-        f.write("")
-
+def create_init_files(subdirectories, feature_path):
+    for subdir in subdirectories:
+        subdir_path = os.path.join(feature_path, subdir)
+        create_files(subdir_path, "__init__.py")
 
 def create_feature_structure(base_dir, feature_name):
     """
@@ -33,7 +25,7 @@ def create_feature_structure(base_dir, feature_name):
     feature_path = os.path.join(features_dir, feature_name)
     if not os.path.exists(feature_path):
         os.makedirs(feature_path, exist_ok=True)
-        create_init_files(feature_path)
+        create_files(feature_path, "__init__.py")
 
     if not os.path.isdir(feature_path):
         print(f"Error: '{feature_path}' is not a directory.")
@@ -47,10 +39,8 @@ def create_feature_structure(base_dir, feature_name):
         "domain/repositories",
         "infrastructure",
         "presentation"]
-    for subdir in subdirectories:
-        subdir_path = os.path.join(feature_path, subdir)
-        os.makedirs(subdir_path, exist_ok=True)
-        create_init_files(subdir_path)
+    create_folders(subdirectories, feature_path)
+    create_init_files(subdirectories, feature_path)
 
     # # Create files within the feature directory
     # files = ["data/data_source.py", "data/repository.py", "domain/entities.py",
