@@ -11,5 +11,5 @@ install: ## install project dependencies
 generate-features: ## generate features
 	@echo "Generating features for ${PWD}"
 	@read -p "Enter feature name: " feature_name; \
-	echo uv run generate/features/folder.py ${PWD} $$feature_name
+	uv run generate/feature/folders.py -b ${PWD} -f $$feature_name
 
