@@ -6,17 +6,19 @@ class AbstractQueueLayer(ABC):
         self.queue_name = queue_name
 
     @abstractmethod
-    def send_message(self, message: str):
+    async def send_message(self, message: str):
         raise NotImplementedError
 
     @abstractmethod
-    def receive_messages(self, max_messages: int) -> list[str]:
+    async def receive_messages(self, max_messages: int) -> list[str]:
         raise NotImplementedError
 
     @abstractmethod
-    def delete_message(self, receipt_handle: str):
+    async def delete_message(self, receipt_handle: str):
         raise NotImplementedError
 
     @abstractmethod
-    def send_message_dlq(self, message: str):
+    async def send_message_dlq(self, message: str):
         raise NotImplementedError
+    
+

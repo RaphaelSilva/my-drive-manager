@@ -1,9 +1,9 @@
 [project]
 name = "my-drive-manager"
 version = "0.1.0"
-description = "Add your description here"
+description = "Controlling my backup files"
 authors = [
-    { name = "Your Name", email = "you@example.com" },
+    { name = "Raphael Silva do Nascimento", email = "eng.raphaelsn@gmail.com" },
 ]
 keywords = ["cli", "drive", "manager"]
 classifiers = [

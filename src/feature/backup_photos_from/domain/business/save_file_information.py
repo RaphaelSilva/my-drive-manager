@@ -1,10 +1,13 @@
+
+from src.feature.backup_photos_from.domain.repositories.file_manager import FileManagerRepository
+from src.feature.backup_photos_from.domain.repositories.queue import QueueRepository
 from src.shared.domain.business.abstraction import Business
 
 
 class SaveFileInformation(Business):
     def __init__(self,
                  folder_source: str,
-                 file_system_repository: FileSystemRepository,
+                 file_system_repository: FileManagerRepository,
                  queue_repository: QueueRepository):
         self.path = folder_source
         self.file_system = file_system_repository
