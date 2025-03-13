@@ -13,4 +13,6 @@ classifiers = [
 ]
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "aio-pika>=9.5.5",
+]
