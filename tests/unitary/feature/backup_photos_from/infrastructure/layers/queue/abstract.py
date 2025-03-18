@@ -21,14 +21,4 @@ class AbstractQueueLayer(ABC):
     async def send_message_dlq(self, message: str):
         raise NotImplementedError
     
-    @abstractmethod
-    async def is_empty(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def size(self) -> int:
-        raise NotImplementedError
-
-
-    
 

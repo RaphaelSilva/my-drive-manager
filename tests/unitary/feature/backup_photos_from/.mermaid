@@ -1,0 +1,21 @@
+flowchart TD
+    A[Start] --> B{Source and destination setting?}
+    B -- No --> Z[END]
+    B -- Yes --> C{Is queue empty?}
+    C -- No --> D[get file description from queue]
+    C -- Yes --> loadSourceFile
+    loadSourceFile --> D
+    D --> E{this file exist in destination?}
+    E -- No --> F[Copy supported file from source to destination]
+    E -- Yes --> WARNING[Send this file information to queue.dlq]
+    F --> G{Has file description in queue?}
+    WARNING --> G
+    G -- No --> Z
+    G -- Yes --> E
+    subgraph loadSourceFile
+        lA{Has Filtering} -- Yes --> lB[list filtered source file]
+        lA -- No --> lC[list all source file]
+        lB --> lD[get description from file]
+        lC --> lD
+        lD --> lE[send each file description to queue]
+    end
