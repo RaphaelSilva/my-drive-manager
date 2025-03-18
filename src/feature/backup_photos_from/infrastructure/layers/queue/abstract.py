@@ -10,25 +10,9 @@ class AbstractQueueLayer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def receive_messages(self, max_messages: int) -> list[str]:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def delete_message(self, receipt_handle: str):
-        raise NotImplementedError
-
-    @abstractmethod
     async def send_message_dlq(self, message: str):
         raise NotImplementedError
-    
-    @abstractmethod
-    async def is_empty(self) -> bool:
-        raise NotImplementedError
 
     @abstractmethod
-    async def size(self) -> int:
+    async def receive_message(self) -> str:
         raise NotImplementedError
-
-
-    
-

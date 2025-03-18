@@ -1,5 +1,6 @@
 
 from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import RabbitMQTopicClient
+from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
 
 
 class QueueLayer():
@@ -11,6 +12,6 @@ class QueueLayer():
         return self.instance.__getattribute__(attr_name)
 
     @staticmethod
-    def create(queue_name: str):
+    def create(queue_name: str) -> AbstractQueueLayer:
         # TODO: Implement a factory to create the correct instance
         return RabbitMQTopicClient(queue_name)

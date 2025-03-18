@@ -149,9 +149,10 @@ class RabbitMQBaseClient():
             if not message:
                 return None
 
-            await message.ack()
             body = message.body.decode()
             response = {"message_id": message.message_id, "body": body}
+
+            await message.ack()
 
             return response
         except Exception as error:
