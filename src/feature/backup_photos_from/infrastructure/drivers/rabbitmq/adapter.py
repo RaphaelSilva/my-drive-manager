@@ -12,18 +12,18 @@ class RabbitMQTopicClient(AbstractQueueLayer, RabbitMQBaseClient):
         self.routing_key = os.environ.get("RABBITMQ_ROUTING_KEY")
 
     async def send_message(self, message: str):
-        response = await self.create_message(self.topic_name, self.routing_key, message)
+        await self.create_message(self.topic_name, self.routing_key, message)
         logger.info(
             "Message sent to RabbitMQ",
-            extra={"message": message, "response": response},
+            extra={"body": message},
         )
 
     async def send_message_dlq(self, message: str):
         topic_name = f'{self.topic_name}.dlq'
-        response = await self.create_message(topic_name, self.routing_key, message)
+        await self.create_message(topic_name, self.routing_key, message)
         logger.info(
             "Message sent to RabbitMQ DLQ",
-            extra={"message": message, "response": response},
+            extra={"body": message},
         )
 
     async def receive_message(self) -> str:
