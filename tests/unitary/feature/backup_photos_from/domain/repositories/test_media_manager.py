@@ -1,4 +1,3 @@
-import os
 from unittest.mock import Mock
 import pytest
 from src.feature.backup_photos_from.domain.repositories.media_manager import MediaManagerRepository
@@ -36,7 +35,7 @@ def test_list_all_midias_from_folder(repository: MediaManagerRepository,
     path = "/test/path"
     file_path_list = ["file2.png", "file3.txt",
                       "file1.jpg", "file4.jpeg", "file5.pdf"]
-    file_manager_mock.list_files.return_value = file_path_list
+    file_manager_mock.list_files.return_value = file_path_list  # type: ignore
 
     # Create mock file descriptions with different dates
     file_list = [
@@ -78,7 +77,7 @@ def test_list_all_midias_from_folder(repository: MediaManagerRepository,
     result = repository.list_all_midias_from_folder(path)
 
     # Assert
-    file_manager_mock.list_files.assert_called_once_with(path)
+    file_manager_mock.list_files.assert_called_once_with(path) # type: ignore
     assert len(result) == 3
     # Check if the result is sorted by creation date
     assert result == file_list_sorted
@@ -102,7 +101,7 @@ def test_move_file(repository: MediaManagerRepository,
     repository.move_file(file, destination)
 
     # Assert
-    file_manager_mock.move_file.assert_called_once_with(
+    file_manager_mock.move_file.assert_called_once_with( # type: ignore
         "/test/path/file1.jpg", destination)
 
 
@@ -112,13 +111,13 @@ def test_create_folder_with_existing_folder(repository: MediaManagerRepository,
     path = "/src/2023/01/01/image.jpg"
     creation_date = "2023-01-01T00:00:00"
 
-    file_manager_mock.folder_exists.return_value = True
+    file_manager_mock.folder_exists.return_value = True  # type: ignore
 
     # Act
     result = repository.create_date_folder(path, creation_date)
 
     # Assert
-    file_manager_mock.create_folder.assert_not_called()
+    file_manager_mock.create_folder.assert_not_called()  # type: ignore
     assert result == path
 
 
@@ -127,29 +126,30 @@ def test_create_folder_with_non_existing_folder(repository: MediaManagerReposito
     # Arrange
     path = "/src/2023/01/01/image.jpg"
     creation_date = "2023-01-01T00:00:00"
-    file_manager_mock.folder_exists.return_value = False
-    file_manager_mock.create_folder.return_value = "/src/2023/01/01/image.jpg"
+    file_manager_mock.folder_exists.return_value = False  # type: ignore
+    file_manager_mock.create_folder.return_value = "/src/2023/01/01/image.jpg"  # type: ignore
 
     # Act
     result = repository.create_date_folder(path, creation_date)
 
     # Assert
-    file_manager_mock.create_folder.assert_called_once_with(
+    file_manager_mock.create_folder.assert_called_once_with(  # type: ignore
         "/src/2023/01/01/image.jpg")
     assert result == path
+
 
 def test_create_folder_with_date_pattern(repository: MediaManagerRepository,
                                          file_manager_mock: AbstractFileManagerLayer):
     # Arrange
     path = "/src"
     creation_date = "2023-01-01T00:00:00"
-    file_manager_mock.folder_exists.return_value = False
-    file_manager_mock.create_folder.return_value = "/src/2023/01/01/image.jpg"
+    file_manager_mock.folder_exists.return_value = False  # type: ignore
+    file_manager_mock.create_folder.return_value = "/src/2023/01/01/image.jpg" # type: ignore
 
     # Act
     result = repository.create_date_folder(path, creation_date)
 
     # Assert
-    file_manager_mock.create_folder.assert_called_once_with(
+    file_manager_mock.create_folder.assert_called_once_with( # type: ignore
         "/src/2023/01/01")
     assert result == "/src/2023/01/01"

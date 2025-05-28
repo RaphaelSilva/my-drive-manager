@@ -58,7 +58,7 @@ class FileDescription:
             encoded_string = base64.b64encode(file.read())
             return encoded_string.decode("ascii")
 
-    def to_json(self) -> dict:
+    def to_json(self) -> str:
         return json.dumps(self.__dict__, indent=4)
 
     @classmethod

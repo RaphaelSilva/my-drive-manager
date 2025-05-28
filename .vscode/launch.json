@@ -12,6 +12,19 @@
       "args": ["-b", "${workspaceFolder}", "-f", "debug_feature"],
       "console": "integratedTerminal",
       // "postDebugTask": "remove_files"
+    },
+    {
+      "name": "Python Debugger: workflow.py (uv)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/entry/functions/start-backup-from-icloud-photos/workflow.py",
+      "args": [
+          "-o",
+          "${workspaceFolder}/target/origin",
+          "-d",
+          "${workspaceFolder}/target/destination"
+      ],
+      "console": "integratedTerminal"
     }
   ]
 }

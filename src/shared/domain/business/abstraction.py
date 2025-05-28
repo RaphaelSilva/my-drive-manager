@@ -8,5 +8,5 @@ O = TypeVar('O')
 class Business(ABC):  # type: ignore
 
     @abstractmethod
-    def execute(self) -> O:
+    def execute(self) -> object:
         '''Execute the business logic'''

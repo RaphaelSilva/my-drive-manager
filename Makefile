@@ -1,4 +1,4 @@
-PYTHON=(uv run python)
+PYTHON=uv run python
 
 
 help: ## this help
@@ -9,6 +9,11 @@ help: ## this help
 
 install: ## install project dependencies
 	uv install
+
+check-version: ## check the version of the uv python environment
+	@echo "Checking uv version"
+	@uv --version
+	@$(PYTHON) --version
 
 generate-features: ## generate features
 	@echo "Generating features for ${PWD}"
@@ -51,3 +56,12 @@ clean: ## Remove cache files
 	@find . -name "*.pyo" | xargs rm -rf
 	@find . -name "__pycache__" -type d | xargs rm -rf
 	@find . -name ".pytest_cache" -type d | xargs rm -rf
+
+start-backup-from-icloud-photos: ## Start backup from iCloud Photos
+	@echo "Starting backup from iCloud Photos"
+	uv run src/entry/functions/backup_from_icloud_photos/workflow.py \
+		--origin ./target/origin \
+		--destination ./target/destination \
+		--log-level info
+	@echo "Backup from iCloud Photos started"
+
