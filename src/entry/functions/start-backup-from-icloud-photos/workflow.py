@@ -307,7 +307,7 @@ def execute(origin_dir, destination_root):
     if skipped_list:
         print(f"Skipped files: {skipped_count}. Details: {', '.join(skipped_list)}")
         with open("skipped_files.txt", "w", encoding="utf-8") as f:
-            for item in skipped_list:
+            for item in skipped_list:   
                 f.write(item + "\n")
     
     print(f"Processing complete. Organized: {organized_count} files. Skipped: {skipped_count} files.")
