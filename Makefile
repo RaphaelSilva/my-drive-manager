@@ -65,3 +65,24 @@ start-backup-from-icloud-photos: ## Start backup from iCloud Photos
 		--log-level info
 	@echo "Backup from iCloud Photos started"
 
+sync-repository: ## Sync the repository
+	@echo "Syncing repository"
+	git fetch --all
+	git reset --hard origin/main
+	git pull origin main
+	@echo "Repository synced"
+
+start-repository: ## Start the repository
+	@echo "Starting repository"
+	uv run src/entry/functions/start_repository/workflow.py \
+		--origin ./target/origin \
+		--destination ./target/destination \
+		--log-level info
+	@echo "Repository started"
+
+download-repository: ## Download the repository
+	@echo "Downloading repository"
+	git clone git@github.com:RaphaelSilva/my-drive-manager.git 
+	
+	
+	
