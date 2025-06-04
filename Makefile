@@ -1,3 +1,6 @@
+include .env
+
+# Makefile for managing the project
 PYTHON=uv run python
 TARGET_ORIGIN= ./target/origin
 TARGET_SOURCE= ./target/source
