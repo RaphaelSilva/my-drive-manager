@@ -2,8 +2,8 @@ include .env
 
 # Makefile for managing the project
 PYTHON=uv run python
-TARGET_ORIGIN= ./target/origin
-TARGET_SOURCE= ./target/source
+TARGET_ORIGIN ?= ./target/origin
+TARGET_SOURCE ?= ./target/source
 
 .PHONY: help install check-version generate-features coverage coverage-unitary test lint install-requirements install-requirements-ci scan-complexity clean start-backup-from-icloud-photos sync-repository start-repository
 
@@ -87,7 +87,6 @@ start-repository: ## Start the repository
 		--log-level info
 	@echo "Repository started"
 
-show_origin: ## Show the origin target path
+show_targets: ## Show the target paths
 	@echo "Origin target path: $(TARGET_ORIGIN)"
-show_source: ## Show the source target path
 	@echo "Source target path: $(TARGET_SOURCE)"
