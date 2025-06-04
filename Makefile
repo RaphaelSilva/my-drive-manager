@@ -3,7 +3,7 @@ include .env
 # Makefile for managing the project
 PYTHON=uv run python
 TARGET_ORIGIN ?= ./target/origin
-TARGET_SOURCE ?= ./target/source
+TARGET_DESTINATION ?= ./target/destination
 
 .PHONY: help install check-version generate-features coverage coverage-unitary test lint install-requirements install-requirements-ci scan-complexity clean start-backup-from-icloud-photos sync-repository start-repository
 
@@ -67,8 +67,8 @@ clean: ## Remove cache files
 start-backup-from-icloud-photos: ## Start backup from iCloud Photos
 	@echo "Starting backup from iCloud Photos"
 	uv run src/entry/functions/backup_from_icloud_photos/workflow.py \
-		--origin ./target/origin \
-		--destination ./target/destination \
+		--origin $(TARGET_ORIGIN) \
+		--destination $(TARGET_DESTINATION) \
 		--log-level info
 	@echo "Backup from iCloud Photos started"
 
