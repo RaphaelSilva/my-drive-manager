@@ -1,4 +1,8 @@
 PYTHON=uv run python
+TARGET_ORIGIN= ./target/origin
+TARGET_SOURCE= ./target/source
+
+.PHONY: help install check-version generate-features coverage coverage-unitary test lint install-requirements install-requirements-ci scan-complexity clean start-backup-from-icloud-photos sync-repository start-repository
 
 
 help: ## this help
@@ -75,14 +79,12 @@ sync-repository: ## Sync the repository
 start-repository: ## Start the repository
 	@echo "Starting repository"
 	uv run src/entry/functions/start_repository/workflow.py \
-		--origin ./target/origin \
+		--origin $(TARGET_ORIGIN) \
 		--destination ./target/destination \
 		--log-level info
 	@echo "Repository started"
 
-download-repository: ## Download the repository
-	@echo "Downloading repository"
-	git clone git@github.com:RaphaelSilva/my-drive-manager.git 
-	
-	
-	
+show_origin: ## Show the origin target path
+	@echo "Origin target path: $(TARGET_ORIGIN)"
+show_source: ## Show the source target path
+	@echo "Source target path: $(TARGET_SOURCE)"
