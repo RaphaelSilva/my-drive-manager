@@ -1,18 +1,18 @@
 include .env
+include src/entry/functions/*/Makefile
 
 # Makefile for managing the project
 PYTHON=uv run python
 TARGET_ORIGIN ?= ./target/origin
 TARGET_DESTINATION ?= ./target/destination
 
-.PHONY: help install check-version generate-features coverage coverage-unitary test lint install-requirements install-requirements-ci scan-complexity clean start-backup-from-icloud-photos sync-repository start-repository
 
 
 help: ## this help
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / { printf "\t\033[36m%-20s\033[0m\t%s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
+	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / { printf "\t\033[36m%-20s\033[0m\t%s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort	
 
 install: ## install project dependencies
 	uv install
@@ -50,11 +50,6 @@ lint: ## This will run the linter
 install-requirements: ## This will install the requirements
 	uv sync
 
-install-requirements-ci: ## This will install the requirements for CI
-	pip install poetry
-	uv install --no-root 
-
-
 scan-complexity: ## This will run the complexity scanner
 	radon cc source/ -a
 
@@ -63,14 +58,6 @@ clean: ## Remove cache files
 	@find . -name "*.pyo" | xargs rm -rf
 	@find . -name "__pycache__" -type d | xargs rm -rf
 	@find . -name ".pytest_cache" -type d | xargs rm -rf
-
-start-backup-from-icloud-photos: ## Start backup from iCloud Photos
-	@echo "Starting backup from iCloud Photos"
-	uv run src/entry/functions/backup_from_icloud_photos/workflow.py \
-		--origin $(TARGET_ORIGIN) \
-		--destination $(TARGET_DESTINATION) \
-		--log-level info
-	@echo "Backup from iCloud Photos started"
 
 sync-repository: ## Sync the repository
 	@echo "Syncing repository"

@@ -1,4 +1,4 @@
-import argparse  # Add argparse for command-line arguments
+
 import datetime
 import mimetypes
 import os
@@ -85,44 +85,54 @@ def get_photo_creation_date(file_path):
     if not os.path.exists(file_path):
         print(f"Error: File '{file_path}' not found.")
         return None
+    
+    def try_exif():
+        try:
+            image = Image.open(file_path)
+            exif_data = image.getexif() # Use public method getexif()
 
-    try:
-        image = Image.open(file_path)
-        exif_data = image.getexif() # Use public method getexif()
+            if not exif_data:
+                print(f"No EXIF metadata found in '{file_path}'.")
+                return None
 
-        if not exif_data:
-            print(f"No EXIF metadata found in '{file_path}'.")
+            date_time_original = None
+            date_time = None
+
+            for tag_id, value in exif_data.items():
+                tag_name = TAGS.get(tag_id, tag_id)
+                if tag_name == 'DateTimeOriginal':
+                    date_time_original = str(value)
+                elif tag_name == 'DateTime':
+                    date_time = str(value)
+
+            if date_time_original:
+                print(f"Found DateTimeOriginal: {date_time_original} in '{file_path}'")
+                return date_time_original
+            elif date_time:
+                print(f"Found DateTime (fallback): {date_time} in '{file_path}'")
+                return date_time
+
+            print(f"Creation date tag not found in EXIF data for '{file_path}'.")
             return None
-
-        date_time_original = None
-        date_time = None
-
-        for tag_id, value in exif_data.items():
-            tag_name = TAGS.get(tag_id, tag_id)
-            if tag_name == 'DateTimeOriginal':
-                date_time_original = str(value)
-            elif tag_name == 'DateTime':
-                date_time = str(value)
-
-        if date_time_original:
-            print(f"Found DateTimeOriginal: {date_time_original} in '{file_path}'")
-            return date_time_original
-        elif date_time:
-            print(f"Found DateTime (fallback): {date_time} in '{file_path}'")
-            return date_time
-
-        print(f"Creation date tag not found in EXIF data for '{file_path}'.")
-        return None
-
-    except FileNotFoundError:
-        print(f"Error: File not found at '{file_path}'.")
-        return None
-    except UnidentifiedImageError:
-        print(f"Error: Cannot identify image file '{file_path}'. It might not be a supported image format or it is corrupted.")
-        return None
-    except (IOError, SyntaxError) as e: # More specific exceptions for image processing
-        print(f"An error occurred while processing '{file_path}': {e}")
-        return None
+        except FileNotFoundError:
+            print(f"Error: File not found at '{file_path}'.")
+            return None
+        except UnidentifiedImageError:
+            print(f"Error: Cannot identify image file '{file_path}'. It might not be a supported image format or it is corrupted.")
+            return None
+        except (IOError, SyntaxError) as e: # More specific exceptions for image processing
+            print(f"An error occurred while processing '{file_path}': {e}")
+            return None
+    def try_stat():
+        try:
+            stat_info = os.stat(file_path)
+            creation_time = datetime.datetime.fromtimestamp(stat_info.st_ctime)
+            print(f"Using file system creation time: {creation_time} for '{file_path}'")
+            return creation_time.strftime("%Y:%m:%d %H:%M:%S")
+        except OSError as e:
+            print(f"Error retrieving file system creation time for '{file_path}': {e}")
+            return None
+    return try_exif() or try_stat()
 
 # Example usage:
 # photo_file = "/path/to/your/photo.jpg"  # Replace with your photo file path
@@ -317,28 +327,4 @@ def execute(origin_dir, destination_root):
 # target_organization_root = "/path/to/your/organized_library" # Replace with your target root
 # execute(source_directory, target_organization_root)
 
-def main():
-    """
-    Main function to parse command-line arguments and execute the photo organization.
-    """
-    parser = argparse.ArgumentParser(description="Organize photos by date into a directory structure.")
-    parser.add_argument(
-        "-o", "--origin", 
-        required=True, 
-        help="The source directory containing photos to organize."
-    )
-    parser.add_argument(
-        "-d", "--destination", 
-        required=True, 
-        help="The root directory where photos will be organized into YYYY/MM/DD subdirectories."
-    )
 
-    args = parser.parse_args()
-
-    print(f"Origin directory: {args.origin}")
-    print(f"Destination root: {args.destination}")
-
-    execute(args.origin, args.destination)
-
-if __name__ == "__main__":
-    main()
