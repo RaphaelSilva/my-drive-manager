@@ -1,4 +1,5 @@
 
+import ffmpeg
 import datetime
 import mimetypes
 import os
@@ -6,6 +7,7 @@ import shutil
 
 from PIL import Image, UnidentifiedImageError
 from PIL.ExifTags import TAGS
+import ffmpeg.dag
 
 
 def copy_file(source_path, destination_dir):
@@ -25,7 +27,8 @@ def copy_file(source_path, destination_dir):
             os.makedirs(destination_dir)
             print(f"Created destination directory: '{destination_dir}'")
         except OSError as e:
-            print(f"Error creating destination directory '{destination_dir}': {e}")
+            print(
+                f"Error creating destination directory '{destination_dir}': {e}")
             return
 
     file_name = os.path.basename(source_path)
@@ -34,7 +37,7 @@ def copy_file(source_path, destination_dir):
     try:
         shutil.copy2(source_path, destination_path)
         print(f"File '{source_path}' copied to '{destination_path}'")
-    except (IOError, shutil.Error) as e: # Catch specific exceptions for file operations
+    except (IOError, shutil.Error) as e:  # Catch specific exceptions for file operations
         print(f"Error copying file: {e}")
 
 # Example usage:
@@ -59,7 +62,8 @@ def list_files_in_directory(directory_path):
         return []
 
     try:
-        files = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
+        files = [f for f in os.listdir(directory_path) if os.path.isfile(
+            os.path.join(directory_path, f))]
         print(f"Files in '{directory_path}': {files}")
         return files
     except OSError as e:
@@ -71,6 +75,68 @@ def list_files_in_directory(directory_path):
 # files_in_dir = list_files_in_directory(target_directory)
 # if files_in_dir:
 #     print("Found files:", files_in_dir)
+
+
+def get_mp4_origin_date_ffmpeg(file_path):
+    """
+    Attempts to extract the origin date from an MP4 file using ffprobe (FFmpeg).
+
+    Args:
+        file_path (str): The full path to the MP4 file.
+
+    Returns:
+        datetime.datetime or None: The video creation date and time if found,
+                                   otherwise, None.
+    """
+    try:
+        # Use ffprobe to get all file information
+        probe = ffmpeg.probe(file_path)
+
+        # The creation_time is usually in the general format metadata
+        format_tags = probe.get('format', {}).get('tags', {})
+        creation_date_str = format_tags.get('creation_time')
+
+        if creation_date_str:
+            # Try to parse the creation date string
+            # Expected format is ISO 8601, but can vary slightly
+            try:
+                return datetime.datetime.fromisoformat(creation_date_str.replace('Z', '+00:00'))
+            except ValueError:
+                # Handle cases where ISO 8601 format might not be strict (e.g., missing seconds)
+                # or other common formats. This parsing might need adjustment.
+                # Example: '2023-01-15 10:30:00'
+                try:
+                    return datetime.datetime.strptime(creation_date_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    print(
+                        f"Warning: Could not parse date format '{creation_date_str}'")
+                    return None
+        else:
+            print("Warning: 'creation_time' not found in format metadata.")
+            # Some videos might have the date in a video/audio stream
+            for stream in probe.get('streams', []):
+                stream_tags = stream.get('tags', {})
+                stream_creation_date_str = stream_tags.get('creation_time')
+                if stream_creation_date_str:
+                    try:
+                        return datetime.datetime.fromisoformat(stream_creation_date_str.replace('Z', '+00:00'))
+                    except ValueError:
+                        print(
+                            f"Warning: Could not parse stream date format '{stream_creation_date_str}'")
+                        continue  # Try the next stream
+            return None
+
+    except ffmpeg.Error as e:
+        print(
+            f"Error processing the file with FFmpeg/ffprobe: {e.stderr.decode()}")
+        return None
+    except FileNotFoundError:
+        print(f"Error: FFmpeg/ffprobe not found. Ensure it's installed and in your PATH.")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
+
 
 def get_photo_creation_date(file_path):
     """
@@ -85,54 +151,46 @@ def get_photo_creation_date(file_path):
     if not os.path.exists(file_path):
         print(f"Error: File '{file_path}' not found.")
         return None
-    
-    def try_exif():
-        try:
-            image = Image.open(file_path)
-            exif_data = image.getexif() # Use public method getexif()
 
-            if not exif_data:
-                print(f"No EXIF metadata found in '{file_path}'.")
-                return None
+    try:
+        image = Image.open(file_path)
+        exif_data = image.getexif()  # Use public method getexif()
 
-            date_time_original = None
-            date_time = None
+        if not exif_data:
+            print(f"No EXIF metadata found in '{file_path}'.")
+            return None
 
-            for tag_id, value in exif_data.items():
-                tag_name = TAGS.get(tag_id, tag_id)
-                if tag_name == 'DateTimeOriginal':
-                    date_time_original = str(value)
-                elif tag_name == 'DateTime':
-                    date_time = str(value)
+        date_time_original = None
+        date_time = None
 
-            if date_time_original:
-                print(f"Found DateTimeOriginal: {date_time_original} in '{file_path}'")
-                return date_time_original
-            elif date_time:
-                print(f"Found DateTime (fallback): {date_time} in '{file_path}'")
-                return date_time
+        for tag_id, value in exif_data.items():
+            tag_name = TAGS.get(tag_id, tag_id)
+            if tag_name == 'DateTimeOriginal':
+                date_time_original = str(value)
+            elif tag_name == 'DateTime':
+                date_time = str(value)
 
-            print(f"Creation date tag not found in EXIF data for '{file_path}'.")
-            return None
-        except FileNotFoundError:
-            print(f"Error: File not found at '{file_path}'.")
-            return None
-        except UnidentifiedImageError:
-            print(f"Error: Cannot identify image file '{file_path}'. It might not be a supported image format or it is corrupted.")
-            return None
-        except (IOError, SyntaxError) as e: # More specific exceptions for image processing
-            print(f"An error occurred while processing '{file_path}': {e}")
-            return None
-    def try_stat():
-        try:
-            stat_info = os.stat(file_path)
-            creation_time = datetime.datetime.fromtimestamp(stat_info.st_ctime)
-            print(f"Using file system creation time: {creation_time} for '{file_path}'")
-            return creation_time.strftime("%Y:%m:%d %H:%M:%S")
-        except OSError as e:
-            print(f"Error retrieving file system creation time for '{file_path}': {e}")
-            return None
-    return try_exif() or try_stat()
+        if date_time_original:
+            print(
+                f"Found DateTimeOriginal: {date_time_original} in '{file_path}'")
+            return date_time_original
+        elif date_time:
+            print(f"Found DateTime (fallback): {date_time} in '{file_path}'")
+            return date_time
+
+        print(f"Creation date tag not found in EXIF data for '{file_path}'.")
+        return None
+    except FileNotFoundError:
+        print(f"Error: File not found at '{file_path}'.")
+        return None
+    except UnidentifiedImageError:
+        print(
+            f"Error: Cannot identify image file '{file_path}'. It might not be a supported image format or it is corrupted.")
+        return None
+    except (IOError, SyntaxError) as e:  # More specific exceptions for image processing
+        print(f"An error occurred while processing '{file_path}': {e}")
+        return None
+
 
 # Example usage:
 # photo_file = "/path/to/your/photo.jpg"  # Replace with your photo file path
@@ -169,15 +227,18 @@ def identify_file_type(file_path):
 
     # Fallback for common extensions if MIME type is not definitive
     _, ext = os.path.splitext(file_path.lower())
-    photo_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.heic', '.webp']
-    video_extensions = ['.mp4', '.mov', '.avi', '.mkv', '.wmv', '.flv', '.webm']
+    photo_extensions = ['.jpg', '.jpeg', '.png', '.gif',
+                        '.bmp', '.tiff', '.heic', '.webp', '.HEIC']
+    video_extensions = ['.mp4', '.mov', '.avi',
+                        '.mkv', '.wmv', '.flv', '.webm']
 
     if ext in photo_extensions:
         return 'photo'
     elif ext in video_extensions:
         return 'video'
 
-    print(f"Could not determine file type for '{file_path}'. MIME type: {mime_type}")
+    print(
+        f"Could not determine file type for '{file_path}'. MIME type: {mime_type}")
     return 'unknown'
 
 # Example usage:
@@ -188,6 +249,7 @@ def identify_file_type(file_path):
 # print(f"'{file1}' is a: {identify_file_type(file1)}")
 # print(f"'{file2}' is a: {identify_file_type(file2)}")
 # print(f"'{file3}' is a: {identify_file_type(file3)}")
+
 
 def ensure_path_exists(directory_path):
     """
@@ -214,6 +276,17 @@ def ensure_path_exists(directory_path):
 # else:
 #     print(f"Failed to create or ensure directory '{path_to_check}'.")
 
+
+def get_date_metadata_stat(file_path):
+    try:
+        stat_info = os.stat(file_path)
+        creation_time = datetime.datetime.fromtimestamp(stat_info.st_ctime)
+        print(f"Using file system creation time: {creation_time} for '{file_path}'")
+        return creation_time.strftime("%Y:%m:%d %H:%M:%S")
+    except OSError as e:
+        print(f"Error retrieving file system creation time for '{file_path}': {e}")
+        return None
+
 def organize_photo_by_date(file_path, destination_path_root):
     """
     Checks if a file is a photo, extracts its creation date, and creates a
@@ -226,24 +299,39 @@ def organize_photo_by_date(file_path, destination_path_root):
     Returns:
         str: The full path to the YYYY/MM/DD directory if successful, None otherwise.
     """
+    def get_date(file_path, file_type):
+        """
+        Gets the creation date of the file based on its type.
+        """
+        if file_type == 'photo':
+            return get_photo_creation_date(file_path)
+        elif file_type == 'video':
+            return get_mp4_origin_date_ffmpeg(file_path)
+        else:
+            print(
+                f"File '{file_path}' is neither a recognized photo nor video. Skipping organization.")
+            return None
+
     file_type = identify_file_type(file_path)
-    if file_type != 'photo':
-        print(f"File '{file_path}' is not a photo (type: {file_type}). Skipping organization.")
+    creation_date_str = get_date(file_path, file_type) or get_date_metadata_stat(file_path)
+
+    if not creation_date_str:        
+        print(
+            f"Could not extract creation date for photo '{file_path}'. Skipping organization.")
         return None
 
-    creation_date_str = get_photo_creation_date(file_path)
-    if not creation_date_str:
-        print(f"Could not extract creation date for photo '{file_path}'. Skipping organization.")
-        return None
+    creation_date_str = str(creation_date_str)
 
     try:
         # EXIF date format is often YYYY:MM:DD HH:MM:SS
         # Sometimes it might be just YYYY:MM:DD
         if ' ' in creation_date_str:
-            date_obj = datetime.datetime.strptime(creation_date_str.split(' ')[0], "%Y:%m:%d")
+            date_obj = datetime.datetime.strptime(
+                creation_date_str.split(' ')[0], "%Y:%m:%d")
         else:
-            date_obj = datetime.datetime.strptime(creation_date_str, "%Y:%m:%d")
-        
+            date_obj = datetime.datetime.strptime(
+                creation_date_str, "%Y:%m:%d")
+
         year = date_obj.strftime("%Y")
         month = date_obj.strftime("%m")
         day = date_obj.strftime("%d")
@@ -251,17 +339,21 @@ def organize_photo_by_date(file_path, destination_path_root):
         organized_path = os.path.join(destination_path_root, year, month, day)
 
         if ensure_path_exists(organized_path):
-            print(f"Successfully created/ensured path: {organized_path} for file '{file_path}'")
+            print(
+                f"Successfully created/ensured path: {organized_path} for file '{file_path}'")
             return organized_path
         else:
-            print(f"Failed to create directory structure for '{file_path}' at '{organized_path}'.")
+            print(
+                f"Failed to create directory structure for '{file_path}' at '{organized_path}'.")
             return None
 
     except ValueError as e:
-        print(f"Error parsing date string '{creation_date_str}' for file '{file_path}': {e}")
+        print(
+            f"Error parsing date string '{creation_date_str}' for file '{file_path}': {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred while organizing photo '{file_path}': {e}")
+        print(
+            f"An unexpected error occurred while organizing photo '{file_path}': {e}")
         return None
 
 # Example usage:
@@ -274,6 +366,7 @@ def organize_photo_by_date(file_path, destination_path_root):
 # else:
 #     print(f"Photo organization failed for: {photo_to_organize}")
 
+
 def execute(origin_dir, destination_root):
     """
     Lists all files in the origin directory, and for each photo, organizes it
@@ -284,14 +377,17 @@ def execute(origin_dir, destination_root):
         destination_root (str): The root directory where photos will be organized.
     """
     if not os.path.isdir(origin_dir):
-        print(f"Error: Origin directory '{origin_dir}' not found or is not a directory.")
+        print(
+            f"Error: Origin directory '{origin_dir}' not found or is not a directory.")
         return
 
     if not os.path.isdir(destination_root):
-        print(f"Warning: Destination root '{destination_root}' not found. It will be created if needed.")
+        print(
+            f"Warning: Destination root '{destination_root}' not found. It will be created if needed.")
         # ensure_path_exists will handle creation if it's a valid path to be created
 
-    print(f"Starting to process files from '{origin_dir}' to be organized under '{destination_root}'")
+    print(
+        f"Starting to process files from '{origin_dir}' to be organized under '{destination_root}'")
     files_to_process = list_files_in_directory(origin_dir)
 
     if not files_to_process:
@@ -305,7 +401,8 @@ def execute(origin_dir, destination_root):
     for file_name in files_to_process:
         full_file_path = os.path.join(origin_dir, file_name)
         print(f"Processing file: {full_file_path}")
-        organized_path = organize_photo_by_date(full_file_path, destination_root)
+        organized_path = organize_photo_by_date(
+            full_file_path, destination_root)
         if organized_path:
             copy_file(full_file_path, organized_path)
             print(f"  -> Copied '{file_name}' to '{organized_path}'")
@@ -315,16 +412,16 @@ def execute(origin_dir, destination_root):
             skipped_count += 1
             skipped_list.append(full_file_path)
     if skipped_list:
-        print(f"Skipped files: {skipped_count}. Details: {', '.join(skipped_list)}")
+        print(
+            f"Skipped files: {skipped_count}. Details: {', '.join(skipped_list)}")
         with open("skipped_files.txt", "w", encoding="utf-8") as f:
-            for item in skipped_list:   
+            for item in skipped_list:
                 f.write(item + "\n")
-    
-    print(f"Processing complete. Organized: {organized_count} files. Skipped: {skipped_count} files.")
+
+    print(
+        f"Processing complete. Organized: {organized_count} files. Skipped: {skipped_count} files.")
 
 # Example usage:
 # source_directory = "/path/to/your/source_photos_folder"  # Replace with your source folder
 # target_organization_root = "/path/to/your/organized_library" # Replace with your target root
 # execute(source_directory, target_organization_root)
-
-
