@@ -211,8 +211,7 @@ class RabbitMQBaseClient():
 
             return response
 
-        except exceptions.QueueEmpty as error:
-            logger.warning("No messages in the queue: %s", error)
+        except exceptions.QueueEmpty:
             return None
         except Exception as error:
             logger.error("Error reading message: %s", error)

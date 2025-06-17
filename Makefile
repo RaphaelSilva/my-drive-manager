@@ -89,8 +89,16 @@ monitoring:
 re-sync-queue: ## Sync the repository and start the repository
 	./init.sh run stop && ./init.sh copy_files && ./init.sh run start
 
-clean-queue: ## Clean the queue
+clean-queue-all: ## Clean the queue
 	./init.sh radmin -f tsv -q list queues name | xargs -I {} ./init.sh radmin delete queue name={}
 
+clean-queue: ## Clean the queue
+	./init.sh radmin delete queue name="${QUEUE_NAME}"
+
+clean-exchange-all: ## Clean all exchanges
+	./init.sh radmin -f tsv -q list exchanges name | grep -v amq | xargs -I {} ./init.sh radmin delete exchange name={}
+
 clean-exchange: ## Clean the exchange
-	./init.sh radmin delete exchange name="test_sanity_topic"
+	./init.sh radmin delete exchange name="${EXCHANGE_NAME}"
+
+clean-all: clean-queue-all clean-exchange-all  ## Clean all
