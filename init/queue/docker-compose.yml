@@ -1,0 +1,36 @@
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management # Imagem do RabbitMQ com a interface de gerenciamento
+    hostname: my-rabbitmq-host # Nome do host dentro do container RabbitMQ
+    container_name: my-rabbitmq # Nome do container Docker
+
+    # Mapeamento de portas: <porta_no_host>:<porta_no_container>
+    # 5672: Porta AMQP (conexão de clientes)
+    # 15672: Porta da interface de gerenciamento web
+    # 4369, 25672: Portas usadas para clustering (Erlang distribution), geralmente não precisam ser expostas externamente para uma única instância
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "4369:4369" # Para clustering, se for usar em produção e precisar de acesso externo. Caso contrário, pode remover.
+      - "25672:25672" # Para clustering, se for usar em produção e precisar de acesso externo. Caso contrário, pode remover.
+
+    # Variáveis de ambiente para configurar o RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password # Altere esta senha para algo seguro!
+
+    # Volume para persistência dos dados do RabbitMQ
+    # Isso garante que as filas, mensagens, configurações, etc., não sejam perdidas
+    # quando o container for reiniciado ou recriado.
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # Armazenamento de dados do RabbitMQ
+      - rabbitmq_logs:/var/log/rabbitmq # Logs do RabbitMQ (opcional, mas recomendado)
+
+    # Reinicia o container se ele falhar
+    restart: always
+
+# Definição dos volumes nomeados
+volumes:
+  rabbitmq_data:
+  rabbitmq_logs:

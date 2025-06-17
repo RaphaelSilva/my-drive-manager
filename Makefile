@@ -77,3 +77,20 @@ start-repository: ## Start the repository
 show_targets: ## Show the target paths
 	@echo "Origin target path: $(TARGET_ORIGIN)"
 	@echo "Source target path: $(TARGET_SOURCE)"
+
+run_sanity: ## Run the sanity checks
+	@echo "Running sanity checks"
+	$(PYTHON) -m src.feature.backup_photos_from.infrastructure.drivers.rabbitmq
+
+monitoring: 
+	@echo "Monitoring the queue"
+	ssh root@192.168.1.107 docker compose -f /root/servers/queue/docker-compose.yml stats
+
+re-sync-queue: ## Sync the repository and start the repository
+	./init.sh run stop && ./init.sh copy_files && ./init.sh run start
+
+clean-queue: ## Clean the queue
+	./init.sh radmin -f tsv -q list queues name | xargs -I {} ./init.sh radmin delete queue name={}
+
+clean-exchange: ## Clean the exchange
+	./init.sh radmin delete exchange name="test_sanity_topic"

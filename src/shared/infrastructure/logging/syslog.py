@@ -1,4 +1,3 @@
-import atexit
 import datetime as dt
 import logging.config
 import logging.handlers
@@ -91,11 +90,11 @@ logging.config.dictConfig(config={
 })
 
 
-def start_queue_listener():
-    queue_handle = logging.getHandlerByName("queue")
-    if queue_handle is not None:
-        queue_handle.listener.start()
-        atexit.register(queue_handle.listener.stop)
+# def start_queue_listener():
+#     queue_handle = logging.getHandlerByName("queue")
+#     if queue_handle is not None:
+#         queue_handle.listener.start()
+#         atexit.register(queue_handle.listener.stop)
 
 
-logger = logging.getLogger("file")
+logger = logging.getLogger("console")

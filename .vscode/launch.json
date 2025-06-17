@@ -28,6 +28,14 @@
       ],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python Debugger: Drivers Sanity Check",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.feature.backup_photos_from.infrastructure.drivers.rabbitmq",      
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
