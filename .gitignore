@@ -75,7 +75,9 @@ docs/_build/
 .pybuilder/
 target/
 
-.jsonl
+*.jsonl
+*.diff
+*.txt
 
 # Jupyter Notebook
 .ipynb_checkpoints

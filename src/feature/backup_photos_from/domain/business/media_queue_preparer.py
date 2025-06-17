@@ -21,5 +21,7 @@ class MediaQueuePreparer(Business):
                 'file': file.to_json(),
                 'source': self.path_source,
                 'destination': self.path_destination
+                'created_at': file.created_at,
+                'updated_at': file.updated_at
             })
             

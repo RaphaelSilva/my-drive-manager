@@ -1,0 +1,45 @@
+[Unit]
+Description=Minha fila de arquivos
+After=network.target # Garante que a rede esteja disponível antes de iniciar
+BindsTo=docker.service # Opcional: se sua aplicação depende de outro serviço systemd, como um banco de dados
+
+[Service]
+# Tipo de inicialização:
+# simple: Processo principal é o único processo do serviço.
+# forking: O processo principal faz um fork e o processo pai sai.
+# oneshot: Executa um comando e sai.
+# O mais comum para aplicações que rodam continuamente é 'simple' ou 'forking'.
+Type=forking
+
+# Caminho completo para o executável da sua aplicação.
+# Se for um script Python, Node.js, etc., inclua o interpretador.
+ExecStart=/root/servers/queue/server.sh init
+
+
+# Opcional: Comando para reiniciar a aplicação (se Type=simple, pode não ser necessário)
+ExecReload=/root/servers/queue/server.sh reload
+
+# Opcional: Comando para parar a aplicação (se Type=simple, pode não ser necessário)
+ExecStop=/root/servers/queue/server.sh stop
+
+# Diretório de trabalho para a aplicação
+WorkingDirectory=/root/servers/queue
+
+# Usuário e grupo sob o qual a aplicação será executada (boa prática de segurança)
+# User=minhaaplicacao
+# Group=minhaaplicacao # Ou "www-data", "nginx", etc., dependendo da sua necessidade
+
+# Opcional: Reiniciar a aplicação em caso de falha
+# Tipos comuns: on-failure, always, on-abnormal
+Restart=on-failure
+RestartSec=5s # Espera 5 segundos antes de tentar reiniciar
+
+# Variáveis de ambiente (opcional)
+# Environment="VARIAVEL1=valor1" "VARIAVEL2=valor2"
+
+# Redirecionar saída padrão e erro para o journald (para logs)
+StandardOutput=journal
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target # Garante que o serviço seja iniciado quando o sistema atinge o modo multi-usuário (o padrão para a maioria dos servidores)

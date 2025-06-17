@@ -1,9 +1,14 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 
 class AbstractQueueLayer(ABC):
-    def __init__(self, queue_name: str):
+    queue_name: str
+    topic_name: str
+
+    def __init__(self, queue_name: str, topic_name: str) -> None:
         self.queue_name = queue_name
+        self.topic_name = topic_name
 
     @abstractmethod
     async def send_message(self, message: str):
@@ -14,5 +19,9 @@ class AbstractQueueLayer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def receive_message(self) -> str:
+    async def receive_message(self) -> Optional[str]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    async def resolve_topic(self) -> bool:
         raise NotImplementedError

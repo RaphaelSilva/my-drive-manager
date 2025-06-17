@@ -1,11 +1,18 @@
+include .env
+include src/entry/functions/*/Makefile
+
+# Makefile for managing the project
 PYTHON=uv run python
+TARGET_ORIGIN ?= ./target/origin
+TARGET_DESTINATION ?= ./target/destination
+
 
 
 help: ## this help
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / { printf "\t\033[36m%-20s\033[0m\t%s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
+	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / { printf "\t\033[36m%-20s\033[0m\t%s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort	
 
 install: ## install project dependencies
 	uv install
@@ -43,11 +50,6 @@ lint: ## This will run the linter
 install-requirements: ## This will install the requirements
 	uv sync
 
-install-requirements-ci: ## This will install the requirements for CI
-	pip install poetry
-	uv install --no-root 
-
-
 scan-complexity: ## This will run the complexity scanner
 	radon cc source/ -a
 
@@ -56,14 +58,6 @@ clean: ## Remove cache files
 	@find . -name "*.pyo" | xargs rm -rf
 	@find . -name "__pycache__" -type d | xargs rm -rf
 	@find . -name ".pytest_cache" -type d | xargs rm -rf
-
-start-backup-from-icloud-photos: ## Start backup from iCloud Photos
-	@echo "Starting backup from iCloud Photos"
-	uv run src/entry/functions/backup_from_icloud_photos/workflow.py \
-		--origin ./target/origin \
-		--destination ./target/destination \
-		--log-level info
-	@echo "Backup from iCloud Photos started"
 
 sync-repository: ## Sync the repository
 	@echo "Syncing repository"
@@ -75,14 +69,36 @@ sync-repository: ## Sync the repository
 start-repository: ## Start the repository
 	@echo "Starting repository"
 	uv run src/entry/functions/start_repository/workflow.py \
-		--origin ./target/origin \
+		--origin $(TARGET_ORIGIN) \
 		--destination ./target/destination \
 		--log-level info
 	@echo "Repository started"
 
-download-repository: ## Download the repository
-	@echo "Downloading repository"
-	git clone git@github.com:RaphaelSilva/my-drive-manager.git 
-	
-	
-	
+show_targets: ## Show the target paths
+	@echo "Origin target path: $(TARGET_ORIGIN)"
+	@echo "Source target path: $(TARGET_SOURCE)"
+
+run_sanity: ## Run the sanity checks
+	@echo "Running sanity checks"
+	$(PYTHON) -m src.feature.backup_photos_from.infrastructure.drivers.rabbitmq
+
+monitoring: 
+	@echo "Monitoring the queue"
+	ssh root@192.168.1.107 docker compose -f /root/servers/queue/docker-compose.yml stats
+
+re-sync-queue: ## Sync the repository and start the repository
+	./init.sh run stop && ./init.sh copy_files && ./init.sh run start
+
+clean-queue-all: ## Clean the queue
+	./init.sh radmin -f tsv -q list queues name | xargs -I {} ./init.sh radmin delete queue name={}
+
+clean-queue: ## Clean the queue
+	./init.sh radmin delete queue name="${QUEUE_NAME}"
+
+clean-exchange-all: ## Clean all exchanges
+	./init.sh radmin -f tsv -q list exchanges name | grep -v amq | xargs -I {} ./init.sh radmin delete exchange name={}
+
+clean-exchange: ## Clean the exchange
+	./init.sh radmin delete exchange name="${EXCHANGE_NAME}"
+
+clean-all: clean-queue-all clean-exchange-all  ## Clean all
