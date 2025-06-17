@@ -56,13 +56,13 @@ async def main():
             print("Script init.sh executed successfully.")
             print(make_script_result.stdout)
         except subprocess.CalledProcessError as e:
-            print(f"Error executing script init.sh: {e}")
+            print(f"Error executing script make clean-*: {e}")
             print(f"Return code: {e.returncode}")
             print(f"Stdout: {e.stdout}")
             print(f"Stderr: {e.stderr}")
         except FileNotFoundError:
             print(
-                "Error: init.sh not found. Ensure the script is in the correct directory and is executable.")
+                "Error: command not found. Ensure the script is in the correct directory and is executable.")
 
 
 if __name__ == "__main__":
