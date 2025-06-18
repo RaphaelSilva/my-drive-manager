@@ -17,9 +17,9 @@ class BaseDriverManeger(AbstractFileManagerLayer):
         Returns:
             list: List of file paths
         """
-        return os.listdir(path)
+        return [os.path.join(path, file) for file in os.listdir(path)]
 
-    def move_file(self, source: str, destination: str):
+    def move_file(self, source: str, destination: str): # type: ignore
         """
         Copy file from source to destination.
 

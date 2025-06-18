@@ -9,13 +9,18 @@ from pydantic import BaseModel
 
 from src.shared.infrastructure.logging.syslog import logger
 
+DEFAULT_HOST = "localhost"
+DEFAULT_PORT = 5672
+DEFAULT_USERNAME = "admin"
+DEFAULT_PASSWORD = "xpto123"
+
 
 class RabbitMQBaseClientData(BaseModel):
-    host: str
-    port: int
-    username: str
-    password: str
-    ssl: bool
+    host: Optional[str] = os.getenv("RABBITMQ_HOST", DEFAULT_HOST)
+    port: Optional[int] = int(os.getenv("RABBITMQ_PORT", str(DEFAULT_PORT)))
+    username: Optional[str] = os.getenv("RABBITMQ_USER", DEFAULT_USERNAME)
+    password: Optional[str] = os.getenv("RABBITMQ_PASSWORD", DEFAULT_PASSWORD)
+    ssl: Optional[bool] = os.getenv("RABBITMQ_SSL", "no").lower() == "true"
 
 
 class ReadMessageResponse(TypedDict):
@@ -27,17 +32,11 @@ class RabbitMQBaseClient():
 
     def __init__(self, data: Optional[RabbitMQBaseClientData] = None) -> None:
         super().__init__()
-        self.host = data.host if data and data.host else os.getenv(
-            "RABBITMQ_HOST", "localhost")
-        port = data.port if data and data.port else os.getenv(
-            "RABBITMQ_PORT",  "5672")
-        self.port = int(port) if port else 0
-        self.username = data.username if data and data.username else os.getenv(
-            "RABBITMQ_USERNAME", "admin")
-        self.password = data.password if data and data.password else os.getenv(
-            "RABBITMQ_PASSWORD",  "xpto123")
-        self.ssl = data.ssl if data and data.ssl else str(
-            os.getenv("RABBITMQ_SSL", "no")).lower() == "true"
+        self.host = data.host if data and data.host else DEFAULT_HOST
+        self.port = data.port if data and data.port else DEFAULT_PORT
+        self.username = data.username if data and data.username else DEFAULT_USERNAME
+        self.password = data.password if data and data.password else DEFAULT_PASSWORD
+        self.ssl = data.ssl if data and data.ssl else False
 
         if not self.host:
             raise ValueError(
@@ -101,6 +100,9 @@ class RabbitMQBaseClient():
                 topic_name, ExchangeType.TOPIC, passive=True
             )
             return exchange is not None
+        except exceptions.ChannelNotFoundEntity as error:
+            logger.warning(f"Channel not found error at {topic_name}: %s", error)
+            return False        
         except exceptions.ChannelClosed as error:
             logger.warning(f"Channel closed error at {topic_name}: %s", error)
             return False

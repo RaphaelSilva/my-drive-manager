@@ -10,7 +10,7 @@ class MediaManagerRepository:
         self.file_manager = file_manager_layer
 
     def filter_midias(self, file: str) -> bool:
-        return file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov'))
+        return file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov', '.heic', '.avi', '.mkv', '.webm'))
 
     def list_all_midias_from_folder(self, path: str) -> list[FileDescription]:
         files = map(

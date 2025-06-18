@@ -15,13 +15,6 @@ class MediaQueuePreparer(Business):
         self.file_system = midia_repository
         self.queue = queue_repository
 
-    def execute(self) -> None:
+    async def execute(self):
         for file in self.file_system.list_all_midias_from_folder(self.path_source):
-            self.queue.put({
-                'file': file.to_json(),
-                'source': self.path_source,
-                'destination': self.path_destination
-                'created_at': file.created_at,
-                'updated_at': file.updated_at
-            })
-            
+            await self.queue.put(file)

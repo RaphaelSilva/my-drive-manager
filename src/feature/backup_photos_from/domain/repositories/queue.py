@@ -1,3 +1,6 @@
+import json
+from typing import Optional
+from src.feature.backup_photos_from.domain.entities.file import FileDescription
 from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
 
 
@@ -5,18 +8,18 @@ class QueueRepository:
     def __init__(self, queue_layer: AbstractQueueLayer):
         self.queue = queue_layer
 
-    def put(self, file: dict) -> None:
-        self.queue.send_message(file)
+    async def put(self, file: FileDescription) -> None:
+        json = file.to_json()
+        await self.queue.send_message(json)
 
-    def get(self) -> dict:
-        return self.queue.receive_messages()
+    async def get(self) -> Optional[FileDescription]:
+        file_description = await self.queue.receive_message()
+        return FileDescription.from_json(file_description) if file_description else None
 
-    def empty(self) -> bool:
-        return self.queue.is_empty()
-
-    def size(self) -> int:
-        return self.queue.size()
-
-    def dlq(self, message: dict, error: Exception) -> None:
-        message["error"] = error.__dict__
-        self.queue.send_message_dlq(message)
+    async def dlq(self, file: FileDescription, error: Exception) -> None:
+        message = {
+            "file": file.__dict__,
+            "error": error.__dict__
+        }
+        message_json = json.dumps(message, indent=4)
+        await self.queue.send_message_dlq(message_json)

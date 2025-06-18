@@ -1,8 +1,11 @@
 import datetime as dt
 import logging.config
 import logging.handlers
+import os
 
 from src.shared.infrastructure.logging.custom_json_formatter import CustomJsonFormatter
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG").upper()
 
 today_date = dt.datetime.now().strftime("%Y-%m-%d")
 
@@ -61,7 +64,7 @@ logging.config.dictConfig(config={
         },
         "file": {
             "class": logging.handlers.RotatingFileHandler,
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "formatter": "json",
             "filename": f"logs-processor-{today_date}.jsonl",
             "maxBytes": 1024,
@@ -75,15 +78,15 @@ logging.config.dictConfig(config={
     },
     "loggers": {
         "newrelic": {
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "handlers": ["console"]
         },
         "console": {
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "handlers": ["stdout"]
         },
         "file": {
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "handlers": ["file"]
         }
     }
@@ -97,4 +100,4 @@ logging.config.dictConfig(config={
 #         atexit.register(queue_handle.listener.stop)
 
 
-logger = logging.getLogger("console")
+logger = logging.getLogger(os.getenv("LOGGERS", "console"))

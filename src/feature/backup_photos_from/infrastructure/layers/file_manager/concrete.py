@@ -1,8 +1,12 @@
 
-from src.feature.backup_photos_from.infrastructure.drivers.systems.linux.adapter import LinuxDriverManeger
-from src.feature.backup_photos_from.infrastructure.drivers.systems.mac.adapter import MacDriverManeger
-from src.feature.backup_photos_from.infrastructure.drivers.systems.windows.adapter import WindowsDriverManeger
 import platform
+
+from src.feature.backup_photos_from.infrastructure.drivers.systems.linux.adapter import \
+    LinuxDriverManeger
+from src.feature.backup_photos_from.infrastructure.drivers.systems.mac.adapter import \
+    MacDriverManeger
+from src.feature.backup_photos_from.infrastructure.drivers.systems.windows.adapter import \
+    WindowsDriverManeger
 
 
 class MediaManagerLayer:

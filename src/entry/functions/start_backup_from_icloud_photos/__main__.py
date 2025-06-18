@@ -1,13 +1,30 @@
 import argparse
-from src.entry.functions.start_backup_from_icloud_photos  import workflow
+import asyncio
+import time
+from src.entry.functions.start_backup_from_icloud_photos import list_all_files_into_queue
+from src.shared.infrastructure.logging.syslog import logger
+
+all_functions = {
+    "list_all_files_into_queue": lambda args: list_all_files_into_queue.execute(
+        args.origin, args.destination),
+}
 
 
-def main():
-    """
-    Main function to parse command-line arguments and execute the photo organization.
-    """
+async def execute_workflow(args):
+    io_tasks = [
+        list_all_files_into_queue.execute(args.origin, args.destination),
+    ]
+    io_results = await asyncio.gather(*io_tasks)
+    logger.info("Resultados I/O: %s", io_results)
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Organize photos by date into a directory structure.")
+    parser.add_argument(
+        "-f", "--function",
+        required=True,
+        help=f"The function to run (e.g., {', '.join(all_functions.keys())}).",
+    )
     parser.add_argument(
         "-o", "--origin",
         required=True,
@@ -27,11 +44,22 @@ def main():
 
     args = parser.parse_args()
 
-    print(f"Origin directory: {args.origin}")
-    print(f"Destination root: {args.destination}")
+    if args.function not in all_functions:
+        print(f"Available functions: {', '.join(all_functions.keys())}")
+        exit(1)
 
-    workflow.execute(args.origin, args.destination)
+    if args.log_level:
+        logger.setLevel(args.log_level.upper())
 
-
-if __name__ == "__main__":
-    main()
+    logger.info("Running function: %s", args.function)
+    logger.info("Origin directory: %s", args.origin)
+    logger.info("Destination root: %s", args.destination)
+    start_time = time.time()
+    if args.function == "execute_workflow":
+        asyncio.run(execute_workflow(args))
+    else:
+        asyncio.run(all_functions[args.function](args))
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    logger.info("Function %s completed in %.2f seconds",
+                args.function, elapsed_time)

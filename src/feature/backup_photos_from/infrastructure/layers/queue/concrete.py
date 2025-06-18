@@ -1,17 +1,22 @@
 
-from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import RabbitMQTopicClient
-from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
+from typing import Optional
+
+from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import \
+    AbstractQueueLayer
+from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import \
+    RabbitMQTopicClient, \
+    RabbitMQTopicClientData
 
 
 class QueueLayer():
-    def __init__(self, queue_name: str):
-        self.queue_name = queue_name
-        self.instance = RabbitMQTopicClient(queue_name)
-
-    def __getattr__(self, attr_name):
-        return self.instance.__getattribute__(attr_name)
 
     @staticmethod
-    def create(queue_name: str) -> AbstractQueueLayer:
+    def create(queue_name: Optional[str] = None) -> AbstractQueueLayer:
         # TODO: Implement a factory to create the correct instance
-        return RabbitMQTopicClient(queue_name)
+        return RabbitMQTopicClient() if not queue_name else RabbitMQTopicClient(
+            RabbitMQTopicClientData(
+                queue_name=queue_name,
+                topic_name=f"{queue_name}.topic",
+                routing_key=f"{queue_name}.routing_key"
+            )
+        )

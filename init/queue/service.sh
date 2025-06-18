@@ -8,8 +8,8 @@ start() {
 
 reload() {
     echo "Reloading systemd..."
-    docker compose -f $ROOT_DIR/docker-compose.yml down
-    docker compose -f $ROOT_DIR/docker-compose.yml up -d
+    docker compose --env-file $ROOT_DIR/.env -f $ROOT_DIR/docker-compose.yml down
+    docker compose --env-file $ROOT_DIR/.env -f $ROOT_DIR/docker-compose.yml up -d
 }
 
 stop() {

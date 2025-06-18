@@ -75,3 +75,4 @@ def test_execute_with_empty_file_list(save_file_information: MediaQueuePreparer,
     mock_midia_repository.list_all_midias_from_folder.assert_called_once_with(
         "/source/path")
     mock_queue_repository.put.assert_not_called()
+    

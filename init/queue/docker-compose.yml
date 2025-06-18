@@ -1,33 +1,30 @@
 
 services:
   rabbitmq:
-    image: rabbitmq:3.13-management # Imagem do RabbitMQ com a interface de gerenciamento
-    hostname: my-rabbitmq-host # Nome do host dentro do container RabbitMQ
-    container_name: my-rabbitmq # Nome do container Docker
+    image: rabbitmq:3.13-management 
+    hostname: my-rabbitmq-host 
+    container_name: my-rabbitmq 
 
-    # Mapeamento de portas: <porta_no_host>:<porta_no_container>
-    # 5672: Porta AMQP (conexão de clientes)
-    # 15672: Porta da interface de gerenciamento web
-    # 4369, 25672: Portas usadas para clustering (Erlang distribution), geralmente não precisam ser expostas externamente para uma única instância
+    # Port mapping: <host>:<port_over_container>
+    # 5672: Port AMQP 
+    # 15672: Port 
+    # 4369, 25672: Ports
     ports:
       - "5672:5672"
       - "15672:15672"
-      - "4369:4369" # Para clustering, se for usar em produção e precisar de acesso externo. Caso contrário, pode remover.
-      - "25672:25672" # Para clustering, se for usar em produção e precisar de acesso externo. Caso contrário, pode remover.
+      - "4369:4369" # For clustering, 
+      - "25672:25672" # For clustering, 
 
-    # Variáveis de ambiente para configurar o RabbitMQ
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password # Altere esta senha para algo seguro!
+    environment:      
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest} 
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    env_file:
+      - .env 
 
-    # Volume para persistência dos dados do RabbitMQ
-    # Isso garante que as filas, mensagens, configurações, etc., não sejam perdidas
-    # quando o container for reiniciado ou recriado.
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq # Armazenamento de dados do RabbitMQ
-      - rabbitmq_logs:/var/log/rabbitmq # Logs do RabbitMQ (opcional, mas recomendado)
+      - rabbitmq_data:/var/lib/rabbitmq 
+      - rabbitmq_logs:/var/log/rabbitmq 
 
-    # Reinicia o container se ele falhar
     restart: always
 
 # Definição dos volumes nomeados

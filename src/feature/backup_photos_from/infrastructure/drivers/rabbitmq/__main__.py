@@ -1,6 +1,7 @@
 import asyncio
 import subprocess
 import os
+import argparse
 
 from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import (
     RabbitMQTopicClient, RabbitMQTopicClientData)
@@ -10,16 +11,19 @@ __all__ = [
 ]
 
 
-async def main():
+def new_queue():
+    data = RabbitMQTopicClientData()
+    client = RabbitMQTopicClient(data)
+    topic_was_created = asyncio.run(client.resolve_topic())
+    print(
+        f"New queue status {"CREATED" if topic_was_created else "NOT CREATED"}!")
+
+
+async def sanity_check():
     config = RabbitMQTopicClientData(
-        host="192.168.1.107",
-        port=5672,
-        username="user",
-        password="password",
-        ssl=False,
-        queue_name="test_sanity_queue",
-        topic_name="test_sanity_topic",
-        routing_key="test_sanity_routing_key"
+        queue_name="test_sanity.queue",
+        topic_name="test_sanity.topic",
+        routing_key="test_sanity.routing_key"
     )
     client = RabbitMQTopicClient(config)
 
@@ -43,16 +47,20 @@ async def main():
                 break
 
         try:
-            project_root = subprocess.run(["git", "rev-parse", "--show-toplevel"],
-                                          capture_output=True, text=True, check=True).stdout.strip()
+            project_root = subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                capture_output=True, text=True, check=True).stdout.strip()
             makefile_path = os.path.join(project_root, "Makefile")
-            make_script_result = subprocess.run(["make", "-f", makefile_path,
-                                                 f"QUEUE_NAME={config.queue_name}",
-                                                 f"EXCHANGE_NAME={config.topic_name}",
-                                                 "clean-queue", "clean-exchange"],
-                                                check=True,
-                                                capture_output=True,
-                                                text=True)
+            make_script_result = subprocess.run([
+                "make", "-f", makefile_path,
+                f"QUEUE_NAME={config.queue_name}",
+                f"EXCHANGE_NAME={config.topic_name}",
+                "clean-queue", "clean-exchange"
+            ],
+                check=True,
+                capture_output=True,
+                text=True
+            )
             print("Script init.sh executed successfully.")
             print(make_script_result.stdout)
         except subprocess.CalledProcessError as e:
@@ -64,6 +72,23 @@ async def main():
             print(
                 "Error: command not found. Ensure the script is in the correct directory and is executable.")
 
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="Run a specific function.")
+    parser.add_argument("-r", "--run", type=str,
+                        help="Name of the function to run (new_queue, main).", default="main")
+
+    args = parser.parse_args()
+
+    all_functions = {
+        "new_queue": new_queue,
+        "sanity_check": sanity_check,
+    }
+
+    if args.run not in all_functions:
+        print(f"Available functions: {', '.join(all_functions.keys())}")
+        exit(1)
+
+    if args.run == "sanity_check":        
+        asyncio.run(all_functions[args.run]())
+    else:
+        all_functions[args.run]()

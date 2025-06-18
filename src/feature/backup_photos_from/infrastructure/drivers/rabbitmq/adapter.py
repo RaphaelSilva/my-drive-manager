@@ -5,25 +5,30 @@ from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.base import 
 from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
 from src.shared.infrastructure.logging.syslog import logger
 
+DEFAULT_QUEUE_NAME = "default_queue_name"
+DEFAULT_TOPIC_NAME = "default_topic_name"
+DEFAULT_ROUTING_KEY = "default_routing_key"
+
 
 class RabbitMQTopicClientData(RabbitMQBaseClientData):
-    queue_name: str
-    topic_name: str
-    routing_key: str
+    queue_name: Optional[str] = os.environ.get(
+        "RABBITMQ_QUEUE_NAME", DEFAULT_QUEUE_NAME)
+    topic_name: Optional[str] = os.environ.get(
+        "RABBITMQ_TOPIC_NAME", DEFAULT_TOPIC_NAME)
+    routing_key: Optional[str] = os.environ.get(
+        "RABBITMQ_ROUTING_KEY",  DEFAULT_ROUTING_KEY)
 
 
 class RabbitMQTopicClient(AbstractQueueLayer, RabbitMQBaseClient):
 
     def __init__(self, data: Optional[RabbitMQTopicClientData] = None) -> None:
         AbstractQueueLayer.__init__(self,
-                                    data.queue_name if data and data.queue_name else os.environ.get(
-                                        "RABBITMQ_TOPIC_NAME", "default_queue_name"),
-                                    data.topic_name if data and data.topic_name else os.environ.get(
-                                        "RABBITMQ_TOPIC_NAME", "default_topic_name")
+                                    data.queue_name if data and data.queue_name else DEFAULT_QUEUE_NAME,
+                                    data.topic_name if data and data.topic_name else DEFAULT_TOPIC_NAME
                                     )
         RabbitMQBaseClient.__init__(self, data)
-        self.routing_key = data.routing_key if data and data.routing_key else os.environ.get(
-            "RABBITMQ_ROUTING_KEY",  "default_routing_key")
+        self.routing_key = data.routing_key if data and data.routing_key else DEFAULT_ROUTING_KEY
+
 
     async def send_message(self, message: str):
         response = await self.create_message(self.topic_name, self.routing_key, message)

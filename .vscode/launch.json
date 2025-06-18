@@ -19,6 +19,8 @@
       "request": "launch",
       "module": "src.entry.functions.start_backup_from_icloud_photos",
       "args": [
+        "-f", 
+        "list_all_files_into_queue",
         "-o",
         "${workspaceFolder}/target/origin", // Adjust path as needed
         "-d",
@@ -26,6 +28,7 @@
         "-l",
         "debug" // Adjust log level as needed
       ],
+      "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
     },
@@ -34,6 +37,15 @@
       "type": "debugpy",
       "request": "launch",
       "module": "src.feature.backup_photos_from.infrastructure.drivers.rabbitmq",      
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python Debugger: Drivers RabbitMQ new Queue",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.feature.backup_photos_from.infrastructure.drivers.rabbitmq",      
+      "args": ["-r", "new_queue"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
     }
