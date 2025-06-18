@@ -22,9 +22,9 @@ start-backup-from-icloud-photos: ## Start backup from iCloud Photos
 	LOG_LEVEL=$(LOG_LEVEL) \
 	LOGGER=$(LOGGER) \
 	$(PYTHON) -m src.entry.functions.start_backup_from_icloud_photos \
-		--origin $(TARGET_ORIGIN) \
-		--destination $(TARGET_DESTINATION) \
-		--log-level $(LOG_LEVEL)
+		-o $(TARGET_ORIGIN) \
+		-d $(TARGET_DESTINATION) \
+		-l $(LOG_LEVEL)
 	@echo "Backup from iCloud Photos started"
 
 start-backup-from-icloud-photos-init-infra: ## Initialize infrastructure for iCloud Photos backup
