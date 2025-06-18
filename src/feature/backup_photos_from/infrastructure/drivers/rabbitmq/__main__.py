@@ -21,8 +21,8 @@ port: {client.port},
 username: {client.username},
 password: {client.password},
 {DIV}""")
-    # topic_was_created = asyncio.run(client.resolve_topic())
-    # print(f"Queue {"CREATED" if topic_was_created else "NOT CREATED"}!")
+    topic_was_created = asyncio.run(client.resolve_topic())
+    print(f"Queue {"CREATED" if topic_was_created else "NOT CREATED"}!")
 
 
 async def sanity_check():
