@@ -19,7 +19,7 @@ start-backup-from-icloud-photos: ## Start backup from iCloud Photos
 	RABBITMQ_QUEUE_NAME=$(RABBITMQ_QUEUE_NAME) \
 	RABBITMQ_TOPIC_NAME=$(RABBITMQ_TOPIC_NAME) \
 	RABBITMQ_ROUTING_KEY=$(RABBITMQ_ROUTING_KEY) \
-	$(PYTHON) -m src.entry.functions.start_backup_from_icloud_photos \		
+	$(PYTHON) -m src.entry.functions.start_backup_from_icloud_photos \
 		--origin $(TARGET_ORIGIN) \
 		--destination $(TARGET_DESTINATION) \
 		--log-level $(LOG_LEVEL)
