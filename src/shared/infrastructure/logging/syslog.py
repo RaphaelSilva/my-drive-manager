@@ -6,6 +6,9 @@ import os
 from src.shared.infrastructure.logging.custom_json_formatter import CustomJsonFormatter
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG").upper()
+LOGGER = os.getenv("LOGGER", "console").lower()
+
+print(f"Logger: {LOGGER}, Log Level: {LOG_LEVEL}")
 
 today_date = dt.datetime.now().strftime("%Y-%m-%d")
 
@@ -100,4 +103,4 @@ logging.config.dictConfig(config={
 #         atexit.register(queue_handle.listener.stop)
 
 
-logger = logging.getLogger(os.getenv("LOGGERS", "console"))
+logger = logging.getLogger(LOGGER)

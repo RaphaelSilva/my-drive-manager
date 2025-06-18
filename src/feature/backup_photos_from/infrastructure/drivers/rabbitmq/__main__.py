@@ -7,10 +7,11 @@ from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter impo
     RabbitMQTopicClient, RabbitMQTopicClientData)
 
 __all__ = [
-    "RabbitMQTopicClient"
+    "RabbitMQTopicClient", "RabbitMQTopicClientData"
 ]
 
-DIV="-" * 100
+DIV = "-" * 100
+
 
 def new_queue():
     data = RabbitMQTopicClientData()
@@ -24,9 +25,8 @@ port: {client.port},
 username: {client.username},
 password: {client.password},
 {DIV}""")
-    topic_was_created = asyncio.run(client.resolve_topic())
-    print(
-        f"New queue status {"CREATED" if topic_was_created else "NOT CREATED"}!")
+    # topic_was_created = asyncio.run(client.resolve_topic())
+    # print(f"Queue {"CREATED" if topic_was_created else "NOT CREATED"}!")
 
 
 async def sanity_check():
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         print(f"Available functions: {', '.join(all_functions.keys())}")
         exit(1)
 
-    if args.run == "sanity_check":        
+    if args.run == "sanity_check":
         asyncio.run(all_functions[args.run]())
     else:
         all_functions[args.run]()
