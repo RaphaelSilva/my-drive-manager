@@ -17,6 +17,13 @@ drive-rabbitmq-check-env: ## check the environment variables
 
 drive-rabbitmq-new-queue: ## Create a new RabbitMQ instance queue
 	@echo "Creating RabbitMQ instance queue..."
+	RABBITMQ_HOST=$(RABBITMQ_HOST) \
+	RABBITMQ_PORT=$(RABBITMQ_PORT) \
+	RABBITMQ_USER=$(RABBITMQ_USER) \
+	RABBITMQ_PASSWORD=$(RABBITMQ_PASSWORD) \
+	RABBITMQ_QUEUE_NAME=$(RABBITMQ_QUEUE_NAME) \
+	RABBITMQ_TOPIC_NAME=$(RABBITMQ_TOPIC_NAME) \
+	RABBITMQ_ROUTING_KEY=$(RABBITMQ_ROUTING_KEY) \
 	$(PYTHON) -m src.feature.backup_photos_from.infrastructure.drivers.rabbitmq \
 		--run new_queue
 

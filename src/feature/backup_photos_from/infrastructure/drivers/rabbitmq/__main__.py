@@ -6,10 +6,6 @@ import argparse
 from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import (
     RabbitMQTopicClient, RabbitMQTopicClientData)
 
-__all__ = [
-    "RabbitMQTopicClient", "RabbitMQTopicClientData"
-]
-
 DIV = "-" * 88
 
 
@@ -17,7 +13,7 @@ def new_queue():
     data = RabbitMQTopicClientData()
     client = RabbitMQTopicClient(data)
     print(f"""{DIV}
-Creating new queue with name: {client.queue_name}, 
+Creating new queue with name: {client.queue_name},
 topic name: {client.topic_name},
 routing key: {client.routing_key}
 host: {client.host},
