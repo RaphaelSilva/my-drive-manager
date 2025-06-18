@@ -1,6 +1,6 @@
 
 # Makefile for RabbitMQ driver
-drive-rabbitmq-new-queue:
+drive-rabbitmq-new-queue: ## Create a new RabbitMQ instance queue
 	@echo "Creating RabbitMQ instance queue..."
 	$(PYTHON) -m src.feature.backup_photos_from.infrastructure.drivers.rabbitmq \
 		--run new_queue

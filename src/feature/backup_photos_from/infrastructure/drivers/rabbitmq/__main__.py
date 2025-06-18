@@ -10,10 +10,20 @@ __all__ = [
     "RabbitMQTopicClient"
 ]
 
+DIV="-" * 100
 
 def new_queue():
     data = RabbitMQTopicClientData()
     client = RabbitMQTopicClient(data)
+    print(f"""{DIV}
+Creating new queue with name: {client.queue_name}, 
+topic name: {client.topic_name},
+routing key: {client.routing_key}
+host: {client.host},
+port: {client.port},
+username: {client.username},
+password: {client.password},
+{DIV}""")
     topic_was_created = asyncio.run(client.resolve_topic())
     print(
         f"New queue status {"CREATED" if topic_was_created else "NOT CREATED"}!")

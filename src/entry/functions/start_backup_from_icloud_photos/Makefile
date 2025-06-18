@@ -18,9 +18,9 @@ start-backup-from-icloud-photos: ## Start backup from iCloud Photos
 		--log-level $(LOG_LEVEL)
 	@echo "Backup from iCloud Photos started"
 
-start-backup-from-icloud-photos-init-infra: 
+start-backup-from-icloud-photos-init-infra: ## Initialize infrastructure for iCloud Photos backup
 	$(MAKE) drive-rabbitmq-new-queue
 		
 
-start-backup-from-icloud-photos-show-overview:
+start-backup-from-icloud-photos-show-overview: ## Show overview of iCloud Photos backup
 	./init.sh radmin show overview
