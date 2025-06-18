@@ -7,6 +7,7 @@ from src.shared.infrastructure.logging.syslog import logger
 all_functions = {
     "list_all_files_into_queue": lambda args: list_all_files_into_queue.execute(
         args.origin, args.destination),
+    "execute_workflow": lambda args: execute_workflow(args),
 }
 
 
@@ -56,13 +57,11 @@ if __name__ == "__main__":
     logger.info("Running function: %s", args.function)
     logger.info("Origin directory: %s", args.origin)
     logger.info("Destination root: %s", args.destination)
+
     start_time = time.time()
-    if args.function == "execute_workflow":
-        asyncio.run(execute_workflow(args))
-    else:
-        asyncio.run(all_functions[args.function](args))
+    asyncio.run(all_functions[args.function](args))
     end_time = time.time()
-    
+
     elapsed_time = end_time - start_time
     logger.info("Function %s completed in %.2f seconds",
                 args.function, elapsed_time)
