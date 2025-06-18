@@ -1,5 +1,5 @@
 
-check-env: ## check the environment variables
+drive-rabbitmq-check-env: ## check the environment variables
 	@echo "Checking environment variables"
 	@echo "TARGET_ORIGIN=$(TARGET_ORIGIN)"
 	@echo "TARGET_DESTINATION=$(TARGET_DESTINATION)"
