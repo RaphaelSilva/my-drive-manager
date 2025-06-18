@@ -15,6 +15,23 @@ help: ## this help
 	@echo "Targets:"
 	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / { printf "\t\033[36m%-20s\033[0m\t%s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort	
 
+check-env: ## check the environment variables
+	@echo "Checking environment variables"
+	@echo "TARGET_ORIGIN=$(TARGET_ORIGIN)"
+	@echo "TARGET_DESTINATION=$(TARGET_DESTINATION)"
+	@echo "LOG_LEVEL=$(LOG_LEVEL)"
+	@echo "LOGGERS=$(LOGGERS)"
+	@echo "RABBITMQ_QUEUE_NAME=$(RABBITMQ_QUEUE_NAME)"
+	@echo "RABBITMQ_TOPIC_NAME=$(RABBITMQ_TOPIC_NAME)"
+	@echo "RABBITMQ_ROUTING_KEY=$(RABBITMQ_ROUTING_KEY)"
+	@echo "RABBITMQ_HOST=$(RABBITMQ_HOST)"
+	@echo "RABBITMQ_PORT=$(RABBITMQ_PORT)"
+	@echo "RABBITMQ_USER=$(RABBITMQ_USER)"
+	@echo "RABBITMQ_PASSWORD=$(RABBITMQ_PASSWORD)"
+	@echo "HOSTNAME=$(HOSTNAME)"
+	@echo "HOST_IPADDRESS=$(HOST_IPADDRESS)"
+
+
 install: ## install project dependencies
 	uv install
 
