@@ -20,11 +20,7 @@ async def execute_workflow(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Organize photos by date into a directory structure.")
-    parser.add_argument(
-        "-f", "--function",
-        default="execute_workflow",
-        help=f"The function to run (e.g., execute_workflow, {', '.join(all_functions.keys())}).",
-    )
+    
     parser.add_argument(
         "-o", "--origin",
         required=True,
@@ -40,6 +36,12 @@ if __name__ == "__main__":
         required=False,
         default="info",
         help="The log level (info, debug, warner)"
+    )
+    parser.add_argument(
+        "-f", "--function",
+        required=False,
+        default="execute_workflow",
+        help=f"The function to run (e.g., execute_workflow, {', '.join(all_functions.keys())}).",
     )
 
     args = parser.parse_args()
@@ -60,6 +62,7 @@ if __name__ == "__main__":
     else:
         asyncio.run(all_functions[args.function](args))
     end_time = time.time()
+    
     elapsed_time = end_time - start_time
     logger.info("Function %s completed in %.2f seconds",
                 args.function, elapsed_time)
