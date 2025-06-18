@@ -10,7 +10,7 @@ __all__ = [
     "RabbitMQTopicClient", "RabbitMQTopicClientData"
 ]
 
-DIV = "-" * 100
+DIV = "-" * 88
 
 
 def new_queue():
