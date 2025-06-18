@@ -22,8 +22,8 @@ if __name__ == "__main__":
         description="Organize photos by date into a directory structure.")
     parser.add_argument(
         "-f", "--function",
-        required=True,
-        help=f"The function to run (e.g., {', '.join(all_functions.keys())}).",
+        default="execute_workflow",
+        help=f"The function to run (e.g., execute_workflow, {', '.join(all_functions.keys())}).",
     )
     parser.add_argument(
         "-o", "--origin",
