@@ -1,6 +1,6 @@
 include .env
-include src/entry/functions/*/Makefile
-include src/feature/backup_photos_from/infrastructure/drivers/rabbitmq/Makefile
+-include !src/entry/functions/*/Makefile
+-include !src/feature/backup_photos_from/infrastructure/drivers/rabbitmq/Makefile
 
 # Makefile for managing the project
 PYTHON=uv run python
@@ -100,3 +100,17 @@ monitoring:
 re-sync-queue: ## Sync the repository and start the repository
 	./init.sh run stop && ./init.sh copy_files && ./init.sh run start
 
+local-dev-services-down: ## Stop local development services
+	@echo "Stopping local development services"
+	docker compose -f ./docker-compose.yml down
+
+local-dev-services-up: ## Start local development services
+	@echo "Starting local development services"
+	@echo "If it didn't work, try running 'make image-services-build' manually"
+	docker compose -f ./docker-compose.yml up -d
+
+image-services-build: ## Build local development services
+	@echo "Building local development services"
+	for f in $(wildcard dockerfile/*/Makefile); do \
+		make -f $$f build; \
+	done
