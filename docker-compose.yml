@@ -1,9 +1,9 @@
 
 services:
   rabbitmq:
-    image: rabbitmq:3.13-management 
-    hostname: my-rabbitmq-host 
-    container_name: my-rabbitmq 
+    image: rabbitmq.app
+    hostname: rabbitmq 
+    container_name: local.rabbitmq.container
 
     # Port mapping: <host>:<port_over_container>
     # 5672: Port AMQP 
