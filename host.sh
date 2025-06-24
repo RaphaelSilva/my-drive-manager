@@ -1,7 +1,12 @@
 #!/bin/bash
 
-HOSTNAME=root
-HOST_IPADDRESS=192.168.1.107
+source .env
+
+if [ -z "$HOSTNAME" ] || [ -z "$HOST_IPADDRESS" ]; then
+    echo "Error: HOSTNAME and HOST_IPADDRESS must be set in .env"
+    exit 1
+fi
+
 HOSTNAME_IPADDRESS=$HOSTNAME@$HOST_IPADDRESS
 
 APP_NAME=drive-manager
@@ -32,17 +37,22 @@ sync-files() {
     ## ssh $HOSTNAME_IPADDRESS "/root/servers/queue/server.sh init"
 }
 
+status() {
+    echo "Checking the status of the docker service..."
+    ssh $HOSTNAME_IPADDRESS "docker compose -f /root/docker-compose.yml ps"
+}
+
 build() {    
     echo "Building the drive-manager service..."
     ssh $HOSTNAME_IPADDRESS "cd /root && make image-services-build"
 }
 
-container-up() {
+up() {
     echo "Running the drive-manager service..."
-    ssh $HOSTNAME_IPADDRESS "make container-up"
+    ssh $HOSTNAME_IPADDRESS "cd /root && make container-up"
 }
 
-container-down() {
+down() {
     echo "Stopping the drive-manager service..."
     ssh $HOSTNAME_IPADDRESS "make container-down"
 }
