@@ -3,7 +3,7 @@ services:
   rabbitmq:
     image: rabbitmq.app
     hostname: rabbitmq 
-    container_name: local.rabbitmq.container
+    container_name: ${RABBITMQ_CONTAINER_NAME:-local.rabbitmq.container}
 
     # Port mapping: <host>:<port_over_container>
     # 5672: Port AMQP 

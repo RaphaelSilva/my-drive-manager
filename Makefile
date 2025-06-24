@@ -1,4 +1,5 @@
 include .env
+-include !generate/Makefile
 -include !src/entry/functions/*/Makefile
 -include !src/feature/backup_photos_from/infrastructure/drivers/rabbitmq/Makefile
 
@@ -40,12 +41,6 @@ check-version: ## check the version of the uv python environment
 	@uv --version
 	@$(PYTHON) --version
 
-generate-features: ## generate features
-	@echo "Generating features for ${PWD}"
-	@read -p "Enter feature name: " feature_name; \
-	uv run generate/feature/folders.py -b ${PWD} -f $$feature_name
-	uv run generate/feature/tasks.py -b ${PWD} -f $$feature_name
-
 coverage: ## This will run the tests and generate a coverage report
 	$(PYTHON) -m pytest -v --cov-report term-missing --cov=src/ --cov-report=xml --disable-warnings
 
@@ -84,33 +79,22 @@ sync-repository: ## Sync the repository
 	git pull origin main
 	@echo "Repository synced"
 
-show_targets: ## Show the target paths
-	@echo "Origin target path: $(TARGET_ORIGIN)"
-	@echo "Source target path: $(TARGET_SOURCE)"
-
 run_sanity: ## Run the sanity checks
 	@echo "Running sanity checks"
 	$(PYTHON) -m src.feature.backup_photos_from.infrastructure.drivers.rabbitmq \
 		--run sanity_check \
 
-monitoring: 
-	@echo "Monitoring the queue"
-	ssh root@192.168.1.107 docker compose -f /root/servers/queue/docker-compose.yml stats
-
-re-sync-queue: ## Sync the repository and start the repository
-	./init.sh run stop && ./init.sh copy_files && ./init.sh run start
-
 container-down: ## Stop local development services
 	@echo "Stopping local development services"
 	docker compose -f ./docker-compose.yml down
 
-container-up: ## Start local development services
-	@echo "Starting local development services"
+container-up: ## Start container services
+	@echo "Starting container services $(RABBITMQ_CONTAINER_NAME)"
 	@echo "If it didn't work, try running 'make image-services-build' manually"
 	docker compose -f ./docker-compose.yml up -d
-
-image-services-build: ## Build local development services
-	@echo "Building local development services"
+	
+image-services-build: ## Build container services
+	@echo "Building container services"
 	for f in $(wildcard ./dockerfile/*/Makefile); do \
 		make -f $$f build; \
 	done
