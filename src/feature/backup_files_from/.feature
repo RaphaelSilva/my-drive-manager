@@ -1,4 +1,4 @@
-Feature: Backup Photos from Cloud Drives.
+Feature: Backup Files From.
 
     As a user, I want to backup my photos from cloud drives to a local drive.
     As a user, I want to filter files by extension.

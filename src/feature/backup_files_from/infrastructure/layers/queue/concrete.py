@@ -1,9 +1,9 @@
 
 from typing import Optional
 
-from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import \
+from src.feature.backup_files_from.infrastructure.layers.queue.abstract import \
     AbstractQueueLayer
-from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import \
+from src.feature.backup_files_from.infrastructure.drivers.rabbitmq.adapter import \
     RabbitMQTopicClient, \
     RabbitMQTopicClientData
 

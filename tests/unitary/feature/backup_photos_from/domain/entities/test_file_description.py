@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from src.feature.backup_photos_from.domain.entities.file import FileDescription
+from src.feature.backup_files_from.domain.entities.file import FileDescription
 
 
 @pytest.fixture(autouse=True)

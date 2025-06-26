@@ -3,7 +3,7 @@ import subprocess
 import os
 import argparse
 
-from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.adapter import (
+from src.feature.backup_files_from.infrastructure.drivers.rabbitmq.adapter import (
     RabbitMQTopicClient, RabbitMQTopicClientData)
 
 DIV = "-" * 88

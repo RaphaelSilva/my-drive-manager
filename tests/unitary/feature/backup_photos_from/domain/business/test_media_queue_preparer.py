@@ -2,11 +2,11 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from src.feature.backup_photos_from.domain.business.media_queue_preparer import \
+from src.feature.backup_files_from.domain.business.media_queue_preparer import \
     MediaQueuePreparer
-from src.feature.backup_photos_from.domain.repositories.media_manager import \
+from src.feature.backup_files_from.domain.repositories.media_manager import \
     MediaManagerRepository
-from src.feature.backup_photos_from.domain.repositories.queue import \
+from src.feature.backup_files_from.domain.repositories.queue import \
     QueueRepository
 
 

@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.feature.backup_photos_from.domain.repositories.queue import \
+from src.feature.backup_files_from.domain.repositories.queue import \
     QueueRepository
-from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import \
+from src.feature.backup_files_from.infrastructure.layers.queue.abstract import \
     AbstractQueueLayer
 
 
