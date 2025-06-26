@@ -1,4 +1,4 @@
-# 
+# My Drive Manager
 
 ## Github Repo Information
 
@@ -9,7 +9,7 @@ this repo is hosted in Github:
 ## Architecture 
 
 The complete architecture of the project is described in the [docs/architecture.md](docs/architecture.md) file. It includes details about the system components, features, technology stack, and backend architecture.
-
+<!-- 
 ## Build and Run Instructions
 
 Reffer to the [docs/build-and-run.md](docs/build-and-run.md) file for detailed instructions on how to build and run the project.
@@ -29,4 +29,4 @@ uv run -- pytest
 ```
 
 ## Code Style
-The project follows the [Black](https://black.readthedocs.io/en/stable/)
+The project follows the [Black](https://black.readthedocs.io/en/stable/) -->
