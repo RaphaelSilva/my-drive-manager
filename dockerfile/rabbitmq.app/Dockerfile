@@ -7,29 +7,20 @@ FROM rabbitmq:3-management
 RUN apt-get update && apt-get install -y openssl ca-certificates --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Define build argument to enable/disable SSL
-ARG USE_SSL=false
+ARG USE_SSL=true
 
 # Copy SSL certificates and configs only if USE_SSL is true
-RUN mkdir -p /etc/rabbitmq/ssl
-COPY certs/ca_certificate.pem /etc/rabbitmq/ssl/ca_certificate.pem
-COPY certs/server_certificate.pem /etc/rabbitmq/ssl/server_certificate.pem
-COPY certs/server_key.pem /etc/rabbitmq/ssl/server_key.pem
-COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
-COPY advanced.config /etc/rabbitmq/advanced.config
-COPY rabbitmq.nossl.conf /etc/rabbitmq/rabbitmq.nossl.conf
-COPY advanced.nossl.config /etc/rabbitmq/advanced.nossl.config
-
-RUN if [ "$USE_SSL" = "false" ]; then \
-        rm -rf /etc/rabbitmq/ssl && \
-        rm -f /etc/rabbitmq/rabbitmq.conf && \
-        rm -f /etc/rabbitmq/advanced.config && \
-        mv /etc/rabbitmq/rabbitmq.nossl.conf /etc/rabbitmq/rabbitmq.conf && \
-        mv /etc/rabbitmq/advanced.nossl.config /etc/rabbitmq/advanced.config ; \
-    else \
-        rm -f /etc/rabbitmq/rabbitmq.nossl.conf && \
-        rm -f /etc/rabbitmq/advanced.nossl.config ; \
-    fi
-
+RUN if [ "$USE_SSL" = "true" ]; then \
+    mkdir -p /etc/rabbitmq/ssl && \
+    cp certs/ca_certificate.pem /etc/rabbitmq/ssl/ca_certificate.pem && \
+    cp certs/server_certificate.pem /etc/rabbitmq/ssl/server_certificate.pem && \
+    cp certs/server_key.pem /etc/rabbitmq/ssl/server_key.pem && \
+    cp rabbitmq.conf /etc/rabbitmq/rabbitmq.conf && \
+    cp advanced.config /etc/rabbitmq/advanced.config ; \
+  else \
+    cp rabbitmq.conf.nossl /etc/rabbitmq/rabbitmq.conf && \
+    cp advanced.config.nossl /etc/rabbitmq/advanced.config ; \
+  fi
 
 # Expose default RabbitMQ ports:
 # 5672: AMQP (plaintext)
@@ -42,8 +33,8 @@ EXPOSE 5671 5672 15671 15672
 # These variables will be used by RabbitMQ to create the initial user.
 # ATTENTION: For production environments, consider using Docker Secrets or an orchestrator
 # like Kubernetes to manage these credentials securely.
-ENV RABBITMQ_DEFAULT_USER=admin
-ENV RABBITMQ_DEFAULT_PASS=admin
+ENV RABBITMQ_DEFAULT_USER=myuser
+ENV RABBITMQ_DEFAULT_PASS=mypassword
 
 # The default command of the base image starts RabbitMQ.
 CMD ["rabbitmq-server"]
