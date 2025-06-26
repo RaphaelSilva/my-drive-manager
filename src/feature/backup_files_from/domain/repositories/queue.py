@@ -1,7 +1,7 @@
 import json
 from typing import Optional
-from src.feature.backup_photos_from.domain.entities.file import FileDescription
-from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
+from src.feature.backup_files_from.domain.entities.file import FileDescription
+from src.feature.backup_files_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
 
 
 class QueueRepository:

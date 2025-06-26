@@ -1,8 +1,8 @@
 import os
 from typing import Optional  # Import the 'os' module
 
-from src.feature.backup_photos_from.infrastructure.drivers.rabbitmq.base import RabbitMQBaseClient, RabbitMQBaseClientData
-from src.feature.backup_photos_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
+from src.feature.backup_files_from.infrastructure.drivers.rabbitmq.base import RabbitMQBaseClient, RabbitMQBaseClientData
+from src.feature.backup_files_from.infrastructure.layers.queue.abstract import AbstractQueueLayer
 from src.shared.infrastructure.logging.syslog import logger
 
 DEFAULT_QUEUE_NAME = "default_queue_name"

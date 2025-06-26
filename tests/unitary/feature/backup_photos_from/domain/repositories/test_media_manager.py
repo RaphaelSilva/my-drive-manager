@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 import pytest
-from src.feature.backup_photos_from.domain.repositories.media_manager import MediaManagerRepository
-from src.feature.backup_photos_from.domain.entities.file import FileDescription
-from src.feature.backup_photos_from.infrastructure.layers.file_manager.abstract import AbstractFileManagerLayer
+from src.feature.backup_files_from.domain.repositories.media_manager import MediaManagerRepository
+from src.feature.backup_files_from.domain.entities.file import FileDescription
+from src.feature.backup_files_from.infrastructure.layers.file_manager.abstract import AbstractFileManagerLayer
 
 
 @pytest.fixture
