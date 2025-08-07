@@ -24,7 +24,15 @@ class MediaInfoAdapter(AbstractMediaInfoLayer):
             media_info = MediaInfo.parse(path)
             for track in media_info.tracks:
                 if track.track_type == "General":
-                    return track.file_creation_date
+                    date_str = track.file_creation_date
+                    # Assuming the date string is in the format 'YYYY-MM-DD HH:MM:SS UTC'
+                    # The string might start with 'UTC ', so we remove it if present.
+                    if date_str.startswith("UTC "):
+                        date_str = date_str[4:]
+                    # The string might end with ' UTC', so we remove it if present.
+                    if date_str.endswith(" UTC"):
+                        date_str = date_str[:-4]
+                    return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
             raise MediaInfoError(
                 f"No creation date found in media file: {path}")
         except Exception as e:
