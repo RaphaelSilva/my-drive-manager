@@ -166,3 +166,5 @@ cython_debug/
 #.idea/
 
 dockerfile/*/certs/*
+
+assets/*.pickle
