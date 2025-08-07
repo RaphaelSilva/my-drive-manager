@@ -1,3 +1,17 @@
+# Adapter for MediaInfo to extract media file information.
+# This adapter uses the pymediainfo library to parse media files and extract their creation date.
+# External dependencies:
+# - pymediainfo: A Python wrapper for the MediaInfo library.
+#     How to install:
+#     pip install pymediainfo
+#     How to install on macOS:
+#     brew install mediainfo
+#     How to install on Linux:
+#     sudo apt-get install mediainfo
+#     How to install on Windows:
+#     Download the MediaInfo installer from https://mediaarea.net/en/MediaInfo/Download/
+#     and follow the installation instructions.
+
 from datetime import datetime
 from pymediainfo import MediaInfo
 from src.feature.backup_files_from.infrastructure.layers.media.abstract import AbstractMediaInfoLayer, MediaInfoError
