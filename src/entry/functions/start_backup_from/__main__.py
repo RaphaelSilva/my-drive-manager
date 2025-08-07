@@ -1,3 +1,4 @@
+import sys
 import argparse
 import asyncio
 import time
@@ -21,7 +22,7 @@ async def execute_workflow(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Organize photos by date into a directory structure.")
-    
+
     parser.add_argument(
         "-o", "--origin",
         required=True,
@@ -49,7 +50,7 @@ if __name__ == "__main__":
 
     if args.function not in all_functions:
         print(f"Available functions: {', '.join(all_functions.keys())}")
-        exit(1)
+        sys.exit(1)
 
     if args.log_level:
         logger.setLevel(args.log_level.upper())

@@ -19,7 +19,7 @@ class BaseDriverManeger(AbstractFileManagerLayer):
         """
         return [os.path.join(path, file) for file in os.listdir(path)]
 
-    def move_file(self, source: str, destination: str): # type: ignore
+    def move_file(self, source: str, destination: str):  # type: ignore
         """
         Copy file from source to destination.
 
@@ -50,7 +50,7 @@ class BaseDriverManeger(AbstractFileManagerLayer):
             path (str): Path to the file
             new_name (str): New name for the file
         """
-        os.rename(path, new_name)	
+        os.rename(path, new_name)
 
     def create_folder(self, path):
         """

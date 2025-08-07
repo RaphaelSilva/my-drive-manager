@@ -14,10 +14,10 @@
       // "postDebugTask": "remove_files"
     },
     {
-      "name": "Python Debugger: start_backup_from_icloud_photos",
+      "name": "Python Debugger: start_backup_from",
       "type": "debugpy",
       "request": "launch",
-      "module": "src.entry.functions.start_backup_from_icloud_photos",
+      "module": "src.entry.functions.start_backup_from",
       "args": [
         "-f", 
         "list_all_files_into_queue",
@@ -36,7 +36,7 @@
       "name": "Python Debugger: Drivers Sanity Check",
       "type": "debugpy",
       "request": "launch",
-      "module": "src.feature.backup_photos_from.infrastructure.drivers.rabbitmq",      
+      "module": "src.feature.backup_files_from.infrastructure.drivers.rabbitmq",      
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
     },
@@ -48,6 +48,24 @@
       "args": ["-r", "new_queue"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
-    }
+    },
+    {
+      "name": "Python Debugger: start_budo_backup",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.entry.functions.start_budo_backup",      
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debugger: Drivers MediaInfo",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.feature.backup_files_from.infrastructure.drivers",
+      "args": ["-r", "mediainfo"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
   ]
 }

@@ -9,13 +9,10 @@ class MediaManagerRepository:
     def __init__(self, file_manager_layer: AbstractFileManagerLayer):
         self.file_manager = file_manager_layer
 
-    def filter_midias(self, file: str) -> bool:
-        return file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov', '.heic', '.avi', '.mkv', '.webm'))
-
     def list_all_midias_from_folder(self, path: str) -> list[FileDescription]:
         files = map(
             FileDescription.from_file,
-            filter(self.filter_midias, self.file_manager.list_files(path))
+            self.file_manager.list_files(path)
         )
         return sorted(files, key=lambda file: file.creation_date)
 

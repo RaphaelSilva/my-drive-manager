@@ -7,6 +7,7 @@ from src.feature.backup_files_from.infrastructure.drivers.systems.mac.adapter im
     MacDriverManeger
 from src.feature.backup_files_from.infrastructure.drivers.systems.windows.adapter import \
     WindowsDriverManeger
+from src.feature.backup_files_from.infrastructure.layers.file_manager.abstract import AbstractFileManagerLayer
 
 
 class MediaManagerLayer:
@@ -14,7 +15,7 @@ class MediaManagerLayer:
         self.media_manager = media_manager
 
     @staticmethod
-    def create():
+    def create() -> AbstractFileManagerLayer:
         system = platform.system().lower()
         if system == 'windows':
             return WindowsDriverManeger()

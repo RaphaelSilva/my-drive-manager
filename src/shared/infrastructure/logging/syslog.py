@@ -65,33 +65,33 @@ logging.config.dictConfig(config={
             "formatter": "simple",
             "stream": "ext://sys.stdout"
         },
-        "file": {
-            "class": logging.handlers.RotatingFileHandler,
-            "level": LOG_LEVEL,
-            "formatter": "json",
-            "filename": f"logs-processor-{today_date}.jsonl",
-            "maxBytes": 1024,
-            "backupCount": 3,
-        },
-        "queue": {
-            "class": logging.handlers.QueueHandler,
-            "handlers": ["stdout", "file"],
-            "respect_handler_level": True
-        }
+        # "file": {
+        #     "class": logging.handlers.RotatingFileHandler,
+        #     "level": LOG_LEVEL,
+        #     "formatter": "json",
+        #     "filename": f"logs-processor-{today_date}.jsonl",
+        #     "maxBytes": 1024,
+        #     "backupCount": 3,
+        # },
+        # "queue": {
+        #     "class": logging.handlers.QueueHandler,
+        #     "handlers": ["stdout", "file"],
+        #     "respect_handler_level": True
+        # }
     },
     "loggers": {
-        "newrelic": {
-            "level": LOG_LEVEL,
-            "handlers": ["console"]
-        },
+        # "newrelic": {
+        #     "level": LOG_LEVEL,
+        #     "handlers": ["console"]
+        # },
         "console": {
             "level": LOG_LEVEL,
             "handlers": ["stdout"]
         },
-        "file": {
-            "level": LOG_LEVEL,
-            "handlers": ["file"]
-        }
+        # "file": {
+        #     "level": LOG_LEVEL,
+        #     "handlers": ["file"]
+        # }
     }
 })
 
