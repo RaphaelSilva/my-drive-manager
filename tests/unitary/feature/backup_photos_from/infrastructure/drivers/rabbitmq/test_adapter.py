@@ -69,10 +69,11 @@ async def test_create_message(mock_get_client):
     message = "test message"
     response = await client.create_message(topic_name, routing_key, message)
     assert response.get("confirmation")
-    assert isinstance(response.get("message_id"), str)
+    message_id = response.get("message_id")
+    assert isinstance(message_id, str)
     assert re.match(
         r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-        response.get("message_id"),
+        message_id,
     ), "Message ID is not a valid UUID"
     mock_get_client.assert_called_once()
     mock_client.channel.assert_called_once()
