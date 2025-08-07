@@ -8,5 +8,9 @@ class MediaInfoError(Exception): ...
 class AbstractMediaInfoLayer(ABC):
 
     @abstractmethod
-    def extractDate(self, path: str) -> datetime:
+    def extractDate(self) -> datetime:
+        raise NotImplementedError
+
+    @abstractmethod
+    def resumeInfo(self) -> dict:
         raise NotImplementedError
